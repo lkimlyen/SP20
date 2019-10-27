@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/distance_8dp">
+    <RadioButton
+        android:id="@+id/rb_set"
+        android:layout_width="@dimen/size_40dp"
+        android:layout_height="@dimen/size_40dp"
+        android:text="35"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:layout_marginLeft="0dp"
+        android:button="@null"
+        android:background="@drawable/toggle_btn_select_set" />
+</android.support.constraint.ConstraintLayout>

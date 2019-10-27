@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.demo.compass.phongthuy">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.demo.sp19">
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,16 +22,83 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
-        android:name="com.demo.compass.phongthuy.app.CoreApplication"
+        android:name=".app.CoreApplication"
+        tools:replace="android:icon"
         android:theme="@style/AppTheme">
-        <activity android:name="com.demo.compass.phongthuy.screen.login.LoginActivity">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.demo.sp19.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
+        <service android:name=".firebase.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service android:name=".firebase.MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            tools:node="replace"
+            android:name="android.support.VERSION"
+            android:value="26.1.0"
+            />
+        <activity android:name=".screen.splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.demo.compass.phongthuy.app.permission.PermissionActivity"/>
+        <activity android:name=".screen.login.LoginActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".screen.dashboard.DashboardActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".screen.timekeeping.TimekeepingActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".screen.rotation.RotationActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".app.permission.PermissionActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".screen.statistical_gift.StatisticalGiftActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".screen.manager_gift.ManagerGiftActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".screen.take_off_volumn.TakeOffVolumnActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".screen.request_gift.RequestGiftActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".screen.confirm_set.ConfirmSetActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".screen.setting.SettingActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".screen.emergency_report.EmergencyReportActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".screen.rotation_mega.RotationMegaActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".screen.posm.POSMActivity"
+            android:screenOrientation="portrait" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="2ddb95e8e59c5d08e7fdeb87d28c0a543a077d5a" />
     </application>
 
 </manifest>

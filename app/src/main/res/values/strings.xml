@@ -1,13 +1,185 @@
 <resources>
-    <string name="app_name">base_project</string>
-    <string name="text_progress_dialog">Vui lòng chờ</string>
+    <string name="app_name">SP 20</string>
+    <string name="text_username">Tên đăng nhập</string>
+    <string name="text_password">Mật khẩu</string>
+    <string name="text_login">Đăng nhập</string>
+    <string name="text_username_null">Tên đăng nhập không được để trống!</string>
+    <string name="text_password_null">Mật khẩu không được để trống</string>
     <string name="text_sweet_dialog_title">Thông báo</string>
-    <string name="text_ok">Ok</string>
+    <string name="text_ok">OK</string>
+    <string name="text_progress_dialog">Loading...</string>
     <string name="permission_setting">Cài đặt</string>
     <string name="permission_close">Close</string>
     <string name="permission_confirm">Confirm</string>
     <string name="permission_required_toast">Location permission is required for this demo.</string>
     <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
     <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
+    <string name="text_home">Trang chủ</string>
+    <string name="text_upload_all_data">Tải dữ liệu lên server</string>
+    <string name="text_setting">Cài đặt</string>
+    <string name="text_change_password">Đổi mật khẩu</string>
+    <string name="text_logout">Đăng xuất</string>
+    <string name="text_info_product">Thông tin hàng hóa</string>
+    <string name="text_info_market">Thông tin thị trường</string>
+    <string name="text_notification">Thông báo</string>
+    <string name="text_timekeeping">Chấm công</string>
+    <string name="text_capture_exhibition">Chụp hình trưng bày</string>
+    <string name="text_stock">Cập nhật kho</string>
+    <string name="text_product_hvb">Sản phẩm HVB</string>
+    <string name="text_product_rival">Sản phẩm đối thủ</string>
+    <string name="text_comment">Nhận xét - Ý kiến</string>
+    <string name="text_time">Giờ</string>
+    <string name="txt_type">Loại</string>
+    <string name="text_location">Tọa độ</string>
+    <string name="text_comma">,</string>
+    <string name="text_attendance_success_and_capture">Chấm công thành công, vui lòng bấm tiếp tục để chụp hình</string>
+    <string name="text_continue">Tiếp tục</string>
+    <string name="text_location_null">Chưa lấy được vị trí!</string>
+    <string name="text_report_stock">Báo cáo kho</string>
+    <string name="text_product_in_warehouse">Số lượng đã bao gồm hàng hóa trong kho</string>
+    <string name="text_product_in_posm">Chỉ đếm số lượng trong line, ụ kệ trưng bày bia</string>
+    <string name="text_choose_type_attendance">Bạn chưa chọn loại chấm công</string>
+    <string name="text_number">Số lượng</string>
+    <string name="text_number_product" formatted="true">Số lượng %s</string>
+    <string name="text_number_product_short" formatted="true">SL %s:</string>
+    <string name="text_number_input_null">Bạn chưa nhập số lượng!</string>
+    <string name="text_number_input_greater_than_zero">Số lượng nhập vào phải lớn hơn không</string>
+    <string name="text_save_success">Lưu thành công</string>
+    <string name="text_attendance_capture_success">Chụp hình chấm công thành công</string>
+    <string name="upload_data_success">Tải dữ liệu thành công!</string>
+    <string name="text_take_off_volumn">Off Take Volume</string>
+    <string name="text_change_gift">Đổi quà</string>
+    <string name="text_order_id">Mã hóa đơn:</string>
+    <string name="text_customer_id">Mã khách hàng:</string>
+    <string name="text_customer_name">Tên khách hàng:</string>
+    <string name="text_customer_phone">Số điện thoại:</string>
+    <string name="text_customer_address">Địa chỉ:</string>
+    <string name="text_list_product">Số lượng quà:</string>
+    <string name="text_note">Ghi chú:</string>
+    <string name="text_rotation" formatted="true">Quay số \n %s</string>
+    <string name="text_dial_lucky">Quay số may mắn</string>
+    <string name="text_image_order">Hình ảnh hóa đơn</string>
+    <string name="text_image_bill_null">Bạn chưa chụp hình hóa đơn!</string>
+    <string name="text_unqualified_change_gift">Bạn chưa đủ điều kiện để đổi quà!</string>
+    <string name="text_order_code_null">Bạn chưa nhập mã hóa đơn!</string>
+    <string name="text_customer_name_null">Bạn chưa nhập tên khách hàng!</string>
+    <string name="text_customer_phone_null">Bạn chưa nhập số điện thoại khách hàng!</string>
+    <string name="text_manager_gift">Quản lý quà</string>
+    <string name="text_statistical_gift">Thống kê quà</string>
+    <string name="text_image_gift">Hình</string>
+    <string name="text_name_gift">Tên quà</string>
+    <string name="text_search">Search</string>
+    <string name="text_date_null">Bạn chưa chọn ngày để xem</string>
+    <string name="text__depleted_plays">Bạn đã hết lượt quay quà!</string>
+    <string name="text_rest_rotation">Bạn vẫn còn lượt quay!</string>
+    <string name="text_over_quantity_change">Số lượng bạn nhập lớn hơn số lượng được đổi!</string>
+    <string name="text_number_gift_null">Bạn chưa nhập số lượng quà cần đổi!</string>
+    <string name="text_delete_image">Bạn có muốn xóa ảnh này không?</string>
+    <string name="text_yes">Có</string>
+    <string name="text_no">Không</string>
+    <string name="text_schema_gift">Schema quà</string>
+    <string name="text_list_gift_changed">Danh sách quà đã đổi</string>
+    <string name="text_bill">Hóa đơn:</string>
+    <string name="text_set_gift_using" formatted="true">Set quà %s đang sử dụng</string>
+    <string name="text_request_gift">Yêu cầu bổ sung quà:</string>
+    <string name="text_set_gift" formatted="true">Set %s</string>
+    <string name="text_confirm">Xác nhận</string>
+    <string name="text_cancel">Hủy</string>
+    <string name="text_do_you_want_cancel_request">Bạn có muốn hủy yêu cầu này không?</string>
+    <string name="text_do_you_want_send_request">Bạn có muốn gửi yêu cầu này không?</string>
+    <string name="text_number_set_null">Bạn chưa nhập số lượng yêu cầu</string>
+    <string name="text_confirm_set_gift">Xác nhận set quà</string>
+    <string name="text_send_request_success">Gửi yêu cầu thành công</string>
+    <string name="text_confirmed">Đã xác nhận</string>
+    <string name="text_unconfirm">Chưa xác nhận</string>
+    <string name="text_confirm_success">Xác nhận thành công!</string>
+    <string name="text_backup_data">Sao lưu dữ liệu</string>
+    <string name="text_email_firebase">imarkcomp@gmail.com</string>
+    <string name="text_password_firebase">Imark2017</string>
+    <string name="text_backup_fail">Sao lưu thất bại</string>
+    <string name="text_backup_success">Sao lưu thành công</string>
+    <string name="text_password_old">Nhập mật khẩu hiện tại</string>
+    <string name="text_password_new">Nhập mật khẩu mới</string>
+    <string name="text_re_password_new">Nhập lại mật khẩu mới</string>
+    <string name="text_change">Thay đổi</string>
+    <string name="text_password_old_null">Mật khẩu hiện tại không được để trống!</string>
+    <string name="text_password_not_equal">Mật khẩu mới không trùng khớp!</string>
+    <string name="text_password_new_null">Mật khẩu mới không được để trống</string>
+    <string name="text_re_password_new_null">Vui lòng xác nhận lại mật khẩu mới!</string>
+    <string name="text_change_password_success">Thay đổi mật khẩu thành công!</string>
+    <string name="text_do_you_want_logout">Bạn có muốn đăng xuất không?</string>
+    <string name="text_version" formatted="true">Phiên bản: %s</string>
+    <string name="text_choose_set_gift" formatted="true">Chọn set quà %s</string>
+    <string name="text_update_set_gift_success">Cập nhật set quà thành công</string>
+    <string name="message_connection_map_fail">Kết nối bản đồ thất bại.</string>
+    <string name="text_cannot_get_location">Không thể lấy được vị trí của bạn, Hãy khởi động lại ứng dụng!!!</string>
+    <string name="text_download_success">Lấy dữ liệu thành công</string>
+    <string name="text_emergency_report">Báo cáo khẩn cấp</string>
+    <string name="text_employee_code">Mã nhân viên:</string>
+    <string name="text_content_report">Nội dung báo cáo:
+    </string>
+    <string name="text_begin">Bắt đầu</string>
+    <string name="text_other_reasons">Lý do khác</string>
+    <string name="text_retry">Thử lại</string>
+    <string name="text_waiting_get_data">Vui lòng đợi lấy dữ liệu...</string>
+    <string name="text_no_data_upload">Không có dữ liệu để tải lên!</string>
+    <string name="text_check_update_app">Kiểm tra cập nhật phần mềm</string>
+    <string name="text_send_report_success">Gửi báo cáo thành công!</string>
+    <string name="text_end">Kết thúc</string>
+    <string name="text_employee_id_null">Bạn chưa nhập mã nhân viên!</string>
+    <string name="text_reason_null">Bạn chưa chọn lý do</string>
+    <string name="text_finish_success">Kêt thúc thành công</string>
+    <string name="text_reset_data">Reset data</string>
+    <string name="text_have_turns" formatted="true">Bạn có %d lượt quay.</string>
+    <string name="text_finish_turns">Bạn đã hết lượt quay</string>
+    <string name="text_product_input">Danh sách sản phẩm đổi quà</string>
+    <string name="text_total_upload" formatted="true">/%d</string>
+    <string name="text_upload_all_data_to_server">Đang tải dữ liệu lên server...</string>
+    <string name="text_posm">POSM</string>
+    <string name="text_no_data_save">Không có dữ liệu để lưu</string>
+    <string name="text_number_change_gift_rest">Bạn chưa nhập hết số lượng quà được đổi</string>
+    <string name="text_outlet_address" formatted="true">Địa chỉ: %s</string>
+    <string name="text_outlet" formatted="true">Siêu thị: %s</string>
+    <string name="text_account_login" formatted="true">Tài khoản: %s</string>
+    <string name="text_no_data">Không có dữ liệu</string>
+    <string name="notification_channel_id">default</string>
+    <string name="text_request_gift_title">Yêu cầu set quà</string>
+    <string name="text_send_request">Gửi yêu cầu</string>
+    <string name="text_status" formatted="true">Tình trạng: %s </string>
+    <string name="text_warehouse_confirmed">Bạn đã nhận được quà?</string>
+    <string name="text_warehouse_unconfirmed">Kho chưa xác nhận yêu cầu</string>
+    <string name="text_please_upload_all_data_to_server">Vui lòng upload dữ liệu lên server!</string>
+    <string name="text_clear_image">Xóa dữ liệu hình ảnh</string>
 
+    <string name="text_do_you_want_clear_image">Bạn có muốn xóa tất cả hình ảnh?</string>
+    <string name="text_delete_image_success">Xóa hình ảnh thành công</string>
+    <string name="text_input_id_employee">Nhập mã số nhân viên cần báo cáo khẩn cấp</string>
+    <string name="text_timestart">Thời gian \n bắt đầu</string>
+    <string name="text_list_report">Danh sách báo cáo:</string>
+    <string name="text_close_app">Bạn có muốn thoát khỏi ứng dụng</string>
+    <string name="text_update_set_gift">Cập nhật set quà</string>
+    <string name="text_not_request_change_set">Không có yêu cầu đổi quà!</string>
+    <string name="text_not_update">Chưa cập nhật</string>
+    <string name="text_updated">Đã cập nhật</string><string name="location_settings_inadequate_warning">The location settings on the device are not
+        adequate to run this sample. Fix in Settings.</string>
+
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="permission_denied_explanation">Permission was denied, but is needed for core
+        functionality.</string>
+    <string name="settings">Settings</string>
+    <string name="text_function_not_in_outlet">Chức năng này chưa được cấp quyền!</string>
+    <string name="text_do_you_want_update_app">Bạn có muốn cập nhật phần mềm mới!</string>
+    <string name="text_no_address_associated">Unable to resolve host \"sp.imark.com.vn\": No address associated with hostname</string>
+    <string name="text_no_internet_connection">Không có kết nối mạng, vui lòng kiểm tra lại đường truyền</string>
+    <string name="text_connection_error">connectionError</string>
+    <string name="text_connection_fail">Lỗi kết nối, vui lòng kiểm tra đường truyền!</string>
+    <string name="text_close_oos">Chức năng cập nhật OOS đã đóng lúc 10:00 sáng.</string>
+    <string name="text_phone">SĐT:</string>
+    <string name="text_lenght_phone_incorrect">Độ dài số điện thoại không đúng!</string>
+    <string name="text_not_check_in">Bạn chưa chấm công vào, bạn có muốn tiếp tục không!</string>
+    <string name="text_number_oos_not_empty">Số liệu OOS không được để trống!</string>
+    <string name="text_number_posm_not_empty">Số liệu POSM không được để trống!</string>
+    <string name="text_capture_image_error">Hình bị lỗi, vui lòng chụp lại!</string>
+    <string name="text_number_not_empty">Số lượng không được để trống</string>
+    <string name="text_reset_fail">Reset dữ liệu thất bại!</string>
 </resources>

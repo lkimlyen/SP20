@@ -4,11 +4,15 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
+        maven { url 'https://maven.fabric.io/public' }
+        maven { url 'https://jitpack.io' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.2'
         classpath "io.realm:realm-gradle-plugin:5.10.0"
+        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'com.google.gms:google-services:4.3.2'
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -18,7 +22,8 @@ allprojects {
     repositories {
         google()
         jcenter()
-        
+        maven { url 'https://maven.fabric.io/public' }
+        maven { url 'https://jitpack.io' }
     }
     ext {
         //Android
@@ -56,8 +61,8 @@ allprojects {
 
         //firebase
         firebaseMessagingVersion = "17.4.0"
-        firebaseAuthVersion = "16.1.0"
-        firebaseStorageVersion = "16.1.0"
+        firebaseAuthVersion = "19.1.0"
+        firebaseStorageVersion = "19.1.0"
 
         //services
         googleMapVersion = "16.0.0"

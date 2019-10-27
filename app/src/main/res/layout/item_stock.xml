@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/ll_root"
+    android:padding="@dimen/distance_8dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_edittext_stroke_gray">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/distance_8dp">
+
+            <ImageView
+                android:id="@+id/iv_product"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/distance_24dp"
+                android:gravity="center_horizontal"
+                android:lines="2"
+                android:text="Heineken regular"
+                android:textAllCaps="true"
+                android:textColor="@color/green_pea"
+                android:textSize="@dimen/text_14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Số lượng (Thùng)"
+                android:textSize="@dimen/text_12sp"
+                android:textColor="@color/green_pea" />
+
+            <EditText
+                android:id="@+id/et_number"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/size_32dp"
+                android:layout_marginBottom="@dimen/distance_8dp"
+                android:layout_marginLeft="@dimen/distance_24dp"
+                android:clickable="true"
+                android:layout_marginRight="@dimen/distance_24dp"
+                android:layout_marginTop="@dimen/distance_8dp"
+                android:background="@drawable/bg_edittext_stroke_green"
+                android:gravity="center"
+                android:inputType="number"
+                android:paddingLeft="@dimen/distance_8dp"
+                android:paddingRight="@dimen/distance_8dp" />
+
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/iv_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/distance_8dp"
+        android:src="@drawable/img_logo" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/img_e" />
+
+    <ImageView
+        android:id="@+id/iv_e"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/img_e" />
+
+    <LinearLayout
+        android:id="@+id/ll_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_logo"
+        android:layout_marginTop="@dimen/distance_16dp"
+        android:orientation="vertical"
+        android:padding="@dimen/distance_8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_project_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="FESTIVAL 2019"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_24sp"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_logo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/distance_16dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_outlet_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Siêu thị"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_18sp" />
+
+        <TextView
+            android:id="@+id/tv_outlet_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Siêu thị"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_18sp" />
+
+        <TextView
+            android:id="@+id/tv_team_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Siêu thị"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_18sp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/ll_content"
+        android:layout_marginTop="@dimen/distance_16dp"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/distance_8dp"
+        android:paddingRight="@dimen/distance_8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/ll_toolbar"
+            android:background="@drawable/bg_cardview"
+            android:orientation="vertical"
+            android:paddingRight="@dimen/distance_8dp"
+            android:paddingLeft="@dimen/distance_8dp"
+            android:paddingTop="@dimen/distance_16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@color/whiteThree"
+                android:orientation="horizontal">
+
+                <com.andexert.library.RippleView
+                    android:id="@+id/rv_off_take_volume"
+                    rv_centered="true"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/distance_8dp"
+                    app:rv_color="@color/green_pea"
+                    app:rv_rippleDuration="200">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/ic_takeoffvolume" />
+
+                    </LinearLayout>
+                </com.andexert.library.RippleView>
+
+                <com.andexert.library.RippleView
+                    android:id="@+id/rv_report_alert"
+                    rv_centered="true"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/distance_8dp"
+                    app:rv_color="@color/green_pea"
+                    app:rv_rippleDuration="200">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:src="@drawable/ic_report_alert" />
+
+                    </LinearLayout>
+                </com.andexert.library.RippleView>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@color/whiteThree"
+                android:orientation="horizontal">
+
+                <com.andexert.library.RippleView
+                    android:id="@+id/rv_posm_hvb"
+                    rv_centered="true"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/distance_8dp"
+                    app:rv_color="@color/green_pea"
+                    app:rv_rippleDuration="200">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/gridview_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_report_posm" />
+
+                    </LinearLayout>
+
+                </com.andexert.library.RippleView>
+
+                <com.andexert.library.RippleView
+                    android:id="@+id/rv_request_gift"
+                    rv_centered="true"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/distance_8dp"
+                    app:rv_color="@color/green_pea"
+                    app:rv_rippleDuration="200">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_request_gift" />
+
+                    </LinearLayout>
+
+                </com.andexert.library.RippleView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@color/whiteThree"
+                android:orientation="horizontal">
+
+                <com.andexert.library.RippleView
+                    android:id="@+id/rv_confirm_gift"
+                    rv_centered="true"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/distance_8dp"
+                    app:rv_color="@color/green_pea"
+                    app:rv_rippleDuration="200">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_confirm_gift" />
+
+                    </LinearLayout>
+
+                </com.andexert.library.RippleView>
+
+                <com.andexert.library.RippleView
+                    android:id="@+id/rv_upload"
+                    rv_centered="true"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/distance_8dp"
+                    app:rv_color="@color/green_pea"
+                    app:rv_rippleDuration="200">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:src="@drawable/ic_upload" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tv_number_upload"
+                            android:layout_width="@dimen/distance_24dp"
+                            android:layout_height="@dimen/distance_24dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_margin="@dimen/distance_8dp"
+                            android:layout_marginRight="@dimen/distance_16dp"
+                            android:background="@drawable/circle_red"
+                            android:gravity="center"
+                            android:text="10"
+                            android:textColor="@color/white" />
+                    </RelativeLayout>
+                </com.andexert.library.RippleView>
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@color/whiteThree"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <com.andexert.library.RippleView
+                    android:id="@+id/rv_setting"
+                    rv_centered="true"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/distance_8dp"
+                    app:rv_color="@color/green_pea"
+                    app:rv_rippleDuration="200">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:src="@drawable/ic_setting" />
+
+                        </LinearLayout>
+                    </RelativeLayout>
+                </com.andexert.library.RippleView>
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="@dimen/distance_16dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="@dimen/distance_8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/distance_16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_upload_all_data_to_server"
+                    android:textColor="@color/green_pea"
+                    android:textSize="@dimen/text_18sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_progress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="10"
+                        android:textColor="@color/green_pea"
+                        android:textSize="@dimen/text_18sp" />
+
+                    <TextView
+                        android:id="@+id/tv_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="/10"
+                        android:textColor="@color/green_pea"
+                        android:textSize="@dimen/text_18sp" />
+                </LinearLayout>
+
+                <com.daimajia.numberprogressbar.NumberProgressBar
+                    android:id="@+id/number_progress_bar"
+                    style="@style/NumberProgressBar_Passing_Green"
+                    android:layout_marginTop="@dimen/distance_16dp" />
+
+                <LinearLayout
+                    android:id="@+id/ll_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/distance_16dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <Button
+                        android:id="@+id/bt_cancel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/size_32dp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="@dimen/distance_4dp"
+                        android:background="@drawable/bg_button_grey"
+                        android:text="@string/text_cancel"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white" />
+
+                    <Button
+                        android:id="@+id/bt_retry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/size_32dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="@dimen/distance_4dp"
+                        android:background="@drawable/bg_button_green"
+                        android:text="@string/text_retry"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>
+</RelativeLayout>

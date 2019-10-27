@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="@dimen/size_50dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:id="@+id/tv_serial"
+        android:gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:text="STT" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:id="@+id/tv_employee_code"
+        android:textColor="@color/white"
+        android:text="Mã nhân viên" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/tv_timestart"
+        android:gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:text="Timestart" />
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bt_end"
+        android:text="Kết thúc" />
+</LinearLayout>
