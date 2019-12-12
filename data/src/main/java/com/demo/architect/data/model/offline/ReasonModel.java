@@ -52,7 +52,7 @@ public class ReasonModel extends RealmObject {
         for (ReasonEntity reasonEntity : list) {
             ReasonModel reasonModel = new ReasonModel(reasonEntity.getId(), reasonEntity.getEmergencyCode(),
                     reasonEntity.getEmergencyName(), reasonEntity.getEmergencyDescription());
-            realm.copyToRealm(reasonModel);
+            realm.copyToRealmOrUpdate(reasonModel);
         }
     }
 

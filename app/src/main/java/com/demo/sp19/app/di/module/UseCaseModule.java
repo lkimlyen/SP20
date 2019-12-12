@@ -43,6 +43,7 @@ import com.demo.architect.domain.GetWarehouseRequirementUsecase;
 import com.demo.architect.domain.LoginUsecase;
 import com.demo.architect.domain.LogoutUsecase;
 import com.demo.architect.domain.ReadedNotificationSetGiftMegaUsecase;
+import com.demo.architect.domain.SendRequestGiftUsecase;
 import com.demo.architect.domain.UpdateChangeSetUsecase;
 import com.demo.architect.domain.UpdateCurrentGiftUsecase;
 import com.demo.architect.domain.UpdateStockUsecase;
@@ -259,6 +260,10 @@ public class UseCaseModule {
     @Provides
     LogoutUsecase provideLogoutUsecase(AccountRepository remoteRepository) {
         return new LogoutUsecase(remoteRepository);
+    }
+    @Provides
+    SendRequestGiftUsecase provideSendRequestGiftUsecase(GiftRepository remoteRepository) {
+        return new SendRequestGiftUsecase(remoteRepository);
     }
 
 }

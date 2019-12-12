@@ -7,7 +7,9 @@ import com.demo.architect.data.model.CurrentBrandSetEntity;
 import com.demo.architect.data.model.GiftMegaEntity;
 import com.demo.architect.data.model.ProductGiftEntity;
 
+import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -103,5 +105,9 @@ public interface GiftApiInterface {
                                                      @Field("pOutletID") int outletId,
                                                      @Field("pGiftID") int giftId,
                                                      @Field("pTeamOutletID") int teamOutletId);
+
+
+    @POST("https://apikdt.imark.com.vn/v1/requests/create")
+    Call<BaseResponse> sendRequestGift(@Body RequestBody requestBody);
 
 }

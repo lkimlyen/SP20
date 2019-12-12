@@ -47,7 +47,12 @@ public class CustomerProductModel extends RealmObject implements Serializable {
         Number = number;
         CreatedBy = createdBy;
     }
-
+    public CustomerProductModel(int outletID, int productID, int number, int createdBy) {
+        OutletID = outletID;
+        ProductID = productID;
+        Number = number;
+        CreatedBy = createdBy;
+    }
     public CustomerProductModel(int id, int cusID,int outletID, int productID, int number, int createdBy, String createdDateTime, int status) {
         Id = id;
         CusID = cusID;
@@ -67,13 +72,13 @@ public class CustomerProductModel extends RealmObject implements Serializable {
         return nextId;
     }
 
-    public static void addCustomerProduct(Realm realm, List<CustomerProductModel> list) {
+    public static void addCustomerProduct(Realm realm, List<CustomerProductModel> list, int cusID) {
         for (CustomerProductModel customerProductModel : list) {
-            CustomerProductModel giftModel = new CustomerProductModel(id(realm) + 1, customerProductModel.CusID,
+            CustomerProductModel giftModel = new CustomerProductModel(id(realm) + 1, cusID,
                     customerProductModel.OutletID,
                     customerProductModel.ProductID, customerProductModel.Number, customerProductModel.CreatedBy,
                     ConvertUtils.getDateTimeCurrent(), Constants.WAITING_UPLOAD);
-            realm.copyToRealm(giftModel);
+            realm.copyToRealmOrUpdate(giftModel);
         }
 
     }

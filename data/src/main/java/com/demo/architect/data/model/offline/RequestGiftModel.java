@@ -70,7 +70,7 @@ public class RequestGiftModel extends RealmObject {
     }
 
     public static void saveRequestGift(Realm realm, RequestGiftModel requestGiftModel, List<DetailRequestGiftModel> list) {
-        requestGiftModel = realm.copyToRealm(requestGiftModel);
+        requestGiftModel = realm.copyToRealmOrUpdate(requestGiftModel);
         RealmList<DetailRequestGiftModel> parentList = requestGiftModel.requestGiftList;
         for (DetailRequestGiftModel detailRequestGiftModel : list) {
             DetailRequestGiftModel detailRequestGiftModel1 = DetailRequestGiftModel.addRequestCode(realm, detailRequestGiftModel);

@@ -20,7 +20,7 @@ import com.demo.sp19.screen.request_gift.RequestGiftActivity;
 import com.demo.sp19.screen.take_off_volumn.TakeOffVolumnActivity;
 import com.squareup.picasso.Picasso;
 
-import cn.pedant.SweetAlert.SweetAlertDialog;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 
 public class FunctionAdapter extends RecyclerView.Adapter<FunctionAdapter.StockViewHolder> {

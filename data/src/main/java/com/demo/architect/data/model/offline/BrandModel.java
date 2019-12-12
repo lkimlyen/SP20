@@ -47,7 +47,7 @@ public class BrandModel extends RealmObject {
         for (BrandEntitiy item : list) {
             BrandModel brandModel = new BrandModel(item.getId(), item.getBrandCode(),
                     item.getBrandName(), item.isDialLucky(), item.getMaximumChangeGift(), item.getNumberOfEnough(), item.getNumberGiftOfDay());
-            brandModel = realm.copyToRealm(brandModel);
+            brandModel = realm.copyToRealmOrUpdate(brandModel);
 
             RealmList<ProductModel> realmList = brandModel.getProductList();
             RealmResults<ProductModel> productList = realm.where(ProductModel.class).equalTo("BrandID", brandModel.id).findAll();

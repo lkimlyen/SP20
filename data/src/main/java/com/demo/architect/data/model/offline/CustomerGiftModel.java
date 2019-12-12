@@ -5,6 +5,7 @@ import com.demo.architect.utils.view.ConvertUtils;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -67,7 +68,8 @@ public class CustomerGiftModel extends RealmObject {
         return nextId;
     }
 
-    public static void addCustomerGift(Realm realm, List<CustomerGiftModel> list, int customerId) {
+    public static List<Integer> addCustomerGift(Realm realm, List<CustomerGiftModel> list, int customerId) {
+        List<Integer> objectList = new ArrayList<>();
         for (CustomerGiftModel customerGiftModel : list) {
             CustomerGiftModel customerGiftModel1 = new CustomerGiftModel(id(realm) + 1, customerGiftModel.CusId,
                     customerGiftModel.OutletID, customerGiftModel.GiftID, customerGiftModel.NumberGift,
@@ -84,6 +86,28 @@ public class CustomerGiftModel extends RealmObject {
 
         TotalChangeGiftModel totalChangeGiftModel = realm.where(TotalChangeGiftModel.class).equalTo("CustomerId", customerId).findFirst();
         totalChangeGiftModel.setFinished(true);
+
+        RealmResults<BrandModel> brandModelRealmResults = realm.where(BrandModel.class).equalTo("IsDialLucky", true).findAll();
+          for (BrandModel brandModel : brandModelRealmResults) {
+            CurrentBrandModel currentBrandModel = realm.where(CurrentBrandModel.class).equalTo("BrandID", brandModel.getId()).findFirst();
+            if (currentBrandModel != null) {
+                RealmResults<BrandSetDetailModel> brandSetDetailModels = realm.where(BrandSetDetailModel.class).equalTo("BrandSetID", currentBrandModel.getBrandSetID()).findAll();
+
+                int totalGift = 0;
+                int totalRest = 0;
+                for (BrandSetDetailModel brandSetDetailModel : brandSetDetailModels) {
+                    CurrentGiftModel currentGiftModel = realm.where(CurrentGiftModel.class).equalTo("GiftID", brandSetDetailModel.getGiftID()).findFirst();
+                    totalGift = currentGiftModel.getNumberTotal() + totalGift;
+                    totalRest = currentGiftModel.getNumberRest() + totalRest;
+                }
+                if (totalRest * 100 / totalGift <= 30) {
+                    objectList.add(currentBrandModel.getBrandSetID());
+                }
+
+            }
+        }
+
+        return objectList;
     }
 
     public int getId() {

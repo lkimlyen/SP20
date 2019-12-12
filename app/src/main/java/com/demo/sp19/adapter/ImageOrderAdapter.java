@@ -15,7 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.pedant.SweetAlert.SweetAlertDialog;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class ImageOrderAdapter extends RecyclerView.Adapter<ImageOrderAdapter.ImageRealViewHolder> {
 

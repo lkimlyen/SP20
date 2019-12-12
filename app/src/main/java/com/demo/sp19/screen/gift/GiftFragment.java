@@ -14,9 +14,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +46,7 @@ import com.demo.sp19.manager.UserManager;
 import com.demo.sp19.screen.rotation.RotationActivity;
 import com.demo.sp19.screen.rotation_mega.RotationMegaActivity;
 import com.demo.sp19.util.Precondition;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +58,6 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -89,11 +93,14 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
     EditText etCustomerName;
     @BindView(R.id.iv_customer_name)
     ImageView ivCustomerName;
-    @BindView(R.id.et_address)
-    EditText etAddress;
+    @BindView(R.id.radioGroupSex)
+    RadioGroup radioGroupSex;
 
-    @BindView(R.id.iv_address)
-    ImageView ivAddress;
+    @BindView(R.id.et_email)
+    EditText etEmail;
+
+    @BindView(R.id.iv_sex)
+    ImageView ivSex;
 
     @BindView(R.id.et_phone)
     EditText etPhone;
@@ -109,8 +116,21 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
     @BindView(R.id.iv_customer_code)
     ImageView ivCustomerCode;
 
+    @BindView(R.id.iv_customer_email)
+    ImageView ivCustomerEmail;
+
+    @BindView(R.id.et_year_of_birth)
+    EditText etYearOfBirth;
     @BindView(R.id.iv_customer_phone)
     ImageView ivCustomerPhone;
+
+    @BindView(R.id.iv_customer_year_of_birth)
+    ImageView ivCustomerYearOfBirth;
+
+    @BindView(R.id.sp_reason)
+    Spinner spReason;
+    @BindView(R.id.iv_reason_buy)
+    ImageView ivReasonBuy;
     private int customerId = -1;
     private LinkedHashMap<Integer, Integer> brandRotationList = new LinkedHashMap<>();
     private LinkedHashMap<ProductModel, Integer> productChooseNumberList = new LinkedHashMap<>();
@@ -119,6 +139,7 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
     private String mCurrentPhotoPath;
     private List<EditText> listEdittext = new ArrayList<>();
     private boolean isGetInfo;
+    private String sex, reasonBuy;
 
     public GiftFragment() {
         // Required empty public constructor
@@ -169,11 +190,12 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
 
     public void initView() {
         etCustomerId.setText("");
-        etAddress.setText("");
+        etEmail.setText("");
         etOrderId.setText("");
         etPhone.setText("");
         etCustomerName.setText("");
         etNote.setText("");
+        etYearOfBirth.setText("");
         productChooseNumberList.clear();
         totalRotaion = 0;
         allNumberProductList.clear();
@@ -184,8 +206,11 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
         mCurrentPhotoPath = null;
         ivCustomerPhone.setVisibility(View.GONE);
         ivCustomerCode.setVisibility(View.GONE);
-        ivAddress.setVisibility(View.GONE);
+        ivCustomerEmail.setVisibility(View.GONE);
         ivCustomerName.setVisibility(View.GONE);
+        ivSex.setVisibility(View.GONE);
+        ivCustomerYearOfBirth.setVisibility(View.GONE);
+        ivReasonBuy.setVisibility(View.GONE);
         ivNote.setVisibility(View.GONE);
         ivContent.setVisibility(View.GONE);
         ivOrderId.setVisibility(View.GONE);
@@ -218,6 +243,41 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
                 }
             }
         });
+
+        ArrayAdapter<String> reasonAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.reason_buy));
+        reasonAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spReason.setAdapter(reasonAdapter);
+        spReason.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 2) {
+                    reasonBuy = "Mua để uống và tặng";
+                } else {
+                    reasonBuy = spReason.getSelectedItem().toString();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        radioGroupSex.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (radioGroup.getCheckedRadioButtonId()) {
+                    case R.id.rb_male:
+                        sex = "Nam";
+                        break;
+
+                    case R.id.rb_female:
+                        sex = "Nữ";
+                        break;
+                }
+            }
+        });
+        sex = "Nam";
+
     }
 
     TextWatcher textWatcherPhone = new TextWatcher() {
@@ -349,10 +409,12 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
             if (ivCustomerPhone.getVisibility() != View.VISIBLE) {
                 ivCustomerPhone.setVisibility(View.INVISIBLE);
             }
-            ivAddress.setVisibility(View.INVISIBLE);
+            ivCustomerEmail.setVisibility(View.INVISIBLE);
             ivCustomerName.setVisibility(View.INVISIBLE);
             ivNote.setVisibility(View.INVISIBLE);
-
+            ivSex.setVisibility(View.INVISIBLE);
+            ivCustomerYearOfBirth.setVisibility(View.INVISIBLE);
+            ivReasonBuy.setVisibility(View.INVISIBLE);
             ivContent.setVisibility(View.INVISIBLE);
             ivCustomerCode.setVisibility(View.INVISIBLE);
             ivOrderId.setOnClickListener(new View.OnClickListener() {
@@ -367,8 +429,11 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
             if (ivCustomerPhone.getVisibility() != View.VISIBLE) {
                 ivOrderId.setVisibility(View.GONE);
                 ivCustomerCode.setVisibility(View.GONE);
-                ivAddress.setVisibility(View.GONE);
+                ivCustomerEmail.setVisibility(View.GONE);
                 ivCustomerName.setVisibility(View.GONE);
+                ivSex.setVisibility(View.GONE);
+                ivCustomerYearOfBirth.setVisibility(View.GONE);
+                ivReasonBuy.setVisibility(View.GONE);
                 ivNote.setVisibility(View.GONE);
                 ivContent.setVisibility(View.GONE);
                 ivCustomerPhone.setVisibility(View.GONE);
@@ -386,10 +451,12 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
             if (ivOrderId.getVisibility() != View.VISIBLE) {
                 ivOrderId.setVisibility(View.INVISIBLE);
             }
-            ivAddress.setVisibility(View.INVISIBLE);
+            ivCustomerEmail.setVisibility(View.INVISIBLE);
             ivCustomerName.setVisibility(View.INVISIBLE);
             ivNote.setVisibility(View.INVISIBLE);
-
+            ivSex.setVisibility(View.INVISIBLE);
+            ivCustomerYearOfBirth.setVisibility(View.INVISIBLE);
+            ivReasonBuy.setVisibility(View.INVISIBLE);
             ivContent.setVisibility(View.INVISIBLE);
             ivCustomerCode.setVisibility(View.INVISIBLE);
             String content = "";
@@ -414,10 +481,13 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
             if (ivOrderId.getVisibility() != View.VISIBLE) {
                 ivCustomerPhone.setVisibility(View.GONE);
                 ivCustomerCode.setVisibility(View.GONE);
-                ivAddress.setVisibility(View.GONE);
+                ivCustomerEmail.setVisibility(View.GONE);
                 ivCustomerName.setVisibility(View.GONE);
                 ivNote.setVisibility(View.GONE);
                 ivContent.setVisibility(View.GONE);
+                ivSex.setVisibility(View.GONE);
+                ivCustomerYearOfBirth.setVisibility(View.GONE);
+                ivReasonBuy.setVisibility(View.GONE);
                 ivOrderId.setVisibility(View.GONE);
             } else {
                 ivCustomerPhone.setVisibility(View.INVISIBLE);
@@ -432,6 +502,24 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
         customerId = customerModel.getId();
         etCustomerName.setText(customerModel.getCustomerName());
         etNote.setText(customerModel.getNote());
+        sex = customerModel.getSex();
+        if (customerModel.getSex().equals("Nam")) {
+            radioGroupSex.check(R.id.rb_male);
+        } else {
+            radioGroupSex.check(R.id.rb_female);
+        }
+
+        etEmail.setText(customerModel.getEmail());
+        reasonBuy = customerModel.getReasonBuy();
+        if (reasonBuy.equals("Mua để uống")) {
+            spReason.setSelection(0);
+        } else if (reasonBuy.equals("Mua để tặng")) {
+            spReason.setSelection(1);
+        } else {
+            spReason.setSelection(2);
+        }
+        if (customerModel.getYearOfBirth() > 0)
+            etYearOfBirth.setText(String.valueOf(customerModel.getYearOfBirth()));
         List<String> imageList = new ArrayList<>();
         for (ImageModel imageModel : customerImageModelImageModelLinkedHashMap) {
             imageList.add(imageModel.getPath());
@@ -454,6 +542,24 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
     public void showNameAndCusCode(CustomerModel customerModel) {
         etCustomerId.setText(customerModel.getCustomerCode());
         etCustomerName.setText(customerModel.getCustomerName());
+        sex = customerModel.getSex();
+        if (customerModel.getSex().equals("Nam")) {
+            radioGroupSex.check(R.id.rb_male);
+        } else {
+            radioGroupSex.check(R.id.rb_female);
+        }
+
+        etEmail.setText(customerModel.getEmail());
+        reasonBuy = customerModel.getReasonBuy();
+        if (reasonBuy.equals("Mua để uống")) {
+            spReason.setSelection(0);
+        } else if (reasonBuy.equals("Mua để tặng")) {
+            spReason.setSelection(1);
+        } else {
+            spReason.setSelection(2);
+        }
+        if (customerModel.getYearOfBirth() > 0)
+            etYearOfBirth.setText(String.valueOf(customerModel.getYearOfBirth()));
     }
 
     @Override
@@ -670,7 +776,7 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
                     public void onConfirm() {
                         mPresenter.saveInfoCustomer(etOrderId.getText().toString(), etCustomerId.getText().toString(),
                                 etCustomerName.getText().toString(), etPhone.getText().toString(),
-                                etAddress.getText().toString(), etNote.getText().toString(), adapter.getList(),
+                                sex, etEmail.getText().toString(), Integer.parseInt(etYearOfBirth.getText().toString().length() > 0 ? etYearOfBirth.getText().toString() : "0"), reasonBuy, etNote.getText().toString(), adapter.getList(),
                                 allNumberProductList, brandRotationList, productChooseNumberList, totalRotaion);
 
                     }

@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import cn.pedant.SweetAlert.SweetAlertDialog;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class ChangePasswordDialog extends DialogFragment {
     public void setOnChangeListener(OnChangeListener onChangeListener,OnErrorListener onErrorListener) {

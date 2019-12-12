@@ -177,7 +177,7 @@ public class CurrentBrandModel extends RealmObject {
             currentBrandModel.setUsed(true);
         } else {
             currentBrandModel = new CurrentBrandModel(id(realm) + 1, brandModel.getId(), outletId, brandsetId, 0, true, Constants.WAITING_UPLOAD);
-            currentBrandModel = realm.copyToRealm(currentBrandModel);
+            currentBrandModel = realm.copyToRealmOrUpdate(currentBrandModel);
             currentBrandModel.setBrandSetModel(brandSetModel);
             currentBrandModel.setBrandModel(brandModel);
         }

@@ -105,7 +105,7 @@ public interface LocalRepository {
 
     Observable<String> deleteGift();
 
-    Observable<List<ProductModel>> getListProductByBrandId(List<Integer> idList);
+    Observable<List<Object>> getListProductByBrandId(List<Integer> idList);
 
     Observable<List<BrandModel>> getListBrandById(List<Integer> idList);
 
@@ -125,7 +125,7 @@ public interface LocalRepository {
 
     Observable<String> addCustomerImageModel(List<CustomerImageModel> customerImageModelList);
 
-    Observable<String> addCustomerGiftModel(List<CustomerGiftModel> giftModelList, int outletId);
+    Observable<List<Integer>> addCustomerGiftModel(List<CustomerGiftModel> giftModelList, int outletId);
 
     Observable<LinkedHashMap<CustomerModel, List<ImageModel>>> getListCustomerWaitingUpload(int teamOutletId);
 
@@ -155,7 +155,7 @@ public interface LocalRepository {
 
     Observable<LinkedHashMap<CustomerModel, List<CustomerGiftModel>>> checkOrderCode(String customerCode);
 
-    Observable<LinkedHashMap<CustomerModel, List<CustomerGiftModel>>> checkCustomerPhone(String phone, List<Integer> idListBrand);
+    Observable<List<Object>> checkCustomerPhone(String phone, List<Integer> idListBrand);
 
     Observable<String> saveRequestGift(RequestGiftModel requestGiftModel, List<DetailRequestGiftModel> list);
 
@@ -282,4 +282,10 @@ public interface LocalRepository {
     Observable<String> updateStatusCustomerImageById(int id);
 
     Observable<String> updateStatusCustomer();
+
+    Observable<String> clearAllData();
+
+    Observable<Integer> saveInfoChangeGift(List<Object> list);
+
+    Observable<List<Integer>> getInfoSendRequest();
 }

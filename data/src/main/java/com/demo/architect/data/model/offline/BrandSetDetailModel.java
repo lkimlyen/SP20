@@ -38,7 +38,7 @@ public class BrandSetDetailModel extends RealmObject {
             BrandSetDetailModel brandSetDetailModel = new BrandSetDetailModel(item.getId(), item.getBrandSetId(), item.getGiftId(),
                     item.getNumber(), item.getPercentage());
 
-            brandSetDetailModel = realm.copyToRealm(brandSetDetailModel);
+            brandSetDetailModel = realm.copyToRealmOrUpdate(brandSetDetailModel);
             GiftModel giftModel = realm.where(GiftModel.class).equalTo("Id", brandSetDetailModel.getGiftID()).findFirst();
             brandSetDetailModel.setGiftModel(giftModel);
         }

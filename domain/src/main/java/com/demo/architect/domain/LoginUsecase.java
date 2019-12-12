@@ -57,7 +57,7 @@ public class LoginUsecase extends BaseUseCase<BaseResponse<UserEntity>> {
             public void onError(Throwable e) {
                 Log.d(TAG, "onError: " + e.toString());
                 if (useCaseCallback != null) {
-                    useCaseCallback.onError(new AddProfileEmergencyUsecase.ErrorValue(e.getMessage()));
+                    useCaseCallback.onError(new ErrorValue(e.getMessage()));
                 }
             }
         };

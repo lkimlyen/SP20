@@ -47,6 +47,7 @@ import com.demo.sp19.screen.rotation_mega.RotationMegaActivity;
 import com.demo.sp19.util.Precondition;
 import com.demo.sp19.util.RotationView;
 import com.google.gson.Gson;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -59,7 +60,6 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by MSI on 26/11/2017.
@@ -220,6 +220,7 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
 
     @Override
     public void showSuccess(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         Intent returnIntent = new Intent();
         getActivity().setResult(Activity.RESULT_OK, returnIntent);
         getActivity().finish();
@@ -433,6 +434,29 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
             mPresenter.getListGiftByProduct(productIdList);
         }
 
+    }
+
+    @Override
+    public void showUploadRetry() {
+        new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE)
+                .setTitleText(getString(R.string.text_sweet_dialog_title))
+                .setContentText("Send yêu cầu quà thất bại bạn có muốn thử lại không")
+                .setConfirmText(getString(R.string.text_ok))
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        sweetAlertDialog.dismiss();
+                        mPresenter.uploadData();
+                    }
+                }) .setCancelText(getString(R.string.text_no))
+                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        sweetAlertDialog.dismiss();
+                        showSuccess("Gửi yêu cầu thất bại");
+                    }
+                })
+                .show();
     }
 
 

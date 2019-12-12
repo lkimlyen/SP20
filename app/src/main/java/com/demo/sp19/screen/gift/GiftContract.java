@@ -3,19 +3,15 @@ package com.demo.sp19.screen.gift;
 
 import com.demo.architect.data.model.offline.BrandModel;
 import com.demo.architect.data.model.offline.CustomerGiftModel;
-import com.demo.architect.data.model.offline.CustomerImageModel;
 import com.demo.architect.data.model.offline.CustomerModel;
 import com.demo.architect.data.model.offline.CustomerProductModel;
 import com.demo.architect.data.model.offline.ImageModel;
 import com.demo.architect.data.model.offline.ProductModel;
-import com.demo.architect.data.model.offline.TotalRotationBrandModel;
 import com.demo.sp19.app.base.BasePresenter;
 import com.demo.sp19.app.base.BaseView;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by MSI on 26/11/2017.
@@ -56,7 +52,7 @@ public interface GiftContract {
         void checkCustomerPhone(String phone);
 
         //lưu thông tin khách hàng, sl sản phẩm đã mua
-        void saveInfoCustomer(String orderCode, String cusCode, String cusName, String phone, String address,
+        void saveInfoCustomer(String orderCode, String cusCode, String cusName, String phone, String sex, String email, int yearOfBirth, String reasonBuy,
                               String note, List<String> imagePath, LinkedHashMap<ProductModel, Integer> numberProductList,
                               LinkedHashMap<Integer, Integer> brandList,
                               LinkedHashMap<ProductModel, Integer> productChooseNumberList, int totalRotaion);

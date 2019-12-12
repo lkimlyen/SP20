@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import cn.pedant.SweetAlert.SweetAlertDialog;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
     private LinkedHashMap<ProductModel, StockModel> masterList = new LinkedHashMap<>();

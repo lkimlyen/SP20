@@ -36,7 +36,7 @@ public class BrandSetModel extends RealmObject {
         for (BrandSetEntity item : list) {
             BrandSetModel brandSetModel = new BrandSetModel(item.getBrandSetId(),
                     item.getOutletTypeId(), item.getBrandId(), item.getSetName(), item.getTotalGift());
-            realm.copyToRealm(brandSetModel);
+            realm.copyToRealmOrUpdate(brandSetModel);
         }
     }
 

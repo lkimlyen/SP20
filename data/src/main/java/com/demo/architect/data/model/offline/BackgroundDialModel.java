@@ -44,7 +44,7 @@ public class BackgroundDialModel extends RealmObject {
                 backgroundDialEntity.getProjectId(), backgroundDialEntity.getBrandId(),
                 pathButton, pathCircle, pathArrow, pathLayout,
                 backgroundDialEntity.getColorBorder());
-        realm.copyToRealm(backgroundDialModel);
+        realm.copyToRealmOrUpdate(backgroundDialModel);
 
     }
 

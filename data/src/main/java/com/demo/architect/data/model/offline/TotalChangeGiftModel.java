@@ -25,6 +25,12 @@ public class TotalChangeGiftModel extends RealmObject {
         BrandId = brandId;
         NumberChange = numberChange;
     }
+    public TotalChangeGiftModel( int productId, int brandId, int numberChange) {
+
+        ProductId = productId;
+        BrandId = brandId;
+        NumberChange = numberChange;
+    }
 
     public TotalChangeGiftModel(int id, int customerId, int productId, int brandId, int numberChange, boolean finished) {
         Id = id;
@@ -42,7 +48,13 @@ public class TotalChangeGiftModel extends RealmObject {
             realm.copyToRealm(totalChangeGiftModel);
         }
     }
-
+    public static void create(Realm realm, List<TotalChangeGiftModel> list, int customerId) {
+        for (TotalChangeGiftModel item : list) {
+            TotalChangeGiftModel totalChangeGiftModel = new TotalChangeGiftModel(id(realm) + 1, customerId, item.getProductId(),
+                    item.getBrandId(), item.getNumberChange(), false);
+            realm.copyToRealm(totalChangeGiftModel);
+        }
+    }
     public static int id(Realm realm) {
         int nextId = 0;
         Number maxValue = realm.where(TotalChangeGiftModel.class).max("Id");

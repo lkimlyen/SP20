@@ -182,4 +182,14 @@
     <string name="text_capture_image_error">Hình bị lỗi, vui lòng chụp lại!</string>
     <string name="text_number_not_empty">Số lượng không được để trống</string>
     <string name="text_reset_fail">Reset dữ liệu thất bại!</string>
+    <string name="text_update_app_fail">Cập nhật app không thành công</string>
+    <string name="text_customer_sex">Giới tính: </string>
+    <string name="text_customer_email">Email:</string>
+    <string name="text_customer_year_of_birthday">Năm sinh</string>
+    <string name="text_reason_buy">Lý do mua bia:</string>
+    <string-array name="reason_buy">
+        <item>Mua để uống</item>
+        <item>Mua để tặng</item>
+        <item>Cả hai</item>
+    </string-array>
 </resources>

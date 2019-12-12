@@ -6,7 +6,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.demo.architect.data.repository.base.local.LocalRepository;
 import com.demo.architect.data.model.UserEntity;
 import com.demo.architect.data.model.offline.CurrentBrandModel;
 import com.demo.architect.data.model.offline.CurrentGiftModel;
@@ -21,6 +20,7 @@ import com.demo.architect.data.model.offline.POSMReportModel;
 import com.demo.architect.data.model.offline.StockModel;
 import com.demo.architect.data.model.offline.TakeOffVolumnModel;
 import com.demo.architect.data.model.offline.TotalRotationModel;
+import com.demo.architect.data.repository.base.local.LocalRepository;
 import com.demo.architect.domain.AddBrandSetUsedUsecase;
 import com.demo.architect.domain.AddCustomerGiftMegaUsecase;
 import com.demo.architect.domain.AddCustomerGiftUsecase;
@@ -38,6 +38,7 @@ import com.demo.architect.domain.UploadImageUsecase;
 import com.demo.architect.utils.view.FileUtils;
 import com.demo.sp19.R;
 import com.demo.sp19.app.CoreApplication;
+import com.demo.sp19.manager.ResetDataManager;
 import com.demo.sp19.manager.UserManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -55,10 +56,10 @@ import rx.functions.Action1;
  * Created by MSI on 26/11/2017.
  */
 
-public class HomePresenter implements HomeContract.Presenter {
+public class HomePresenter implements com.demo.sp19.screen.home.HomeContract.Presenter {
 
     private final String TAG = HomePresenter.class.getName();
-    private final HomeContract.View view;
+    private final com.demo.sp19.screen.home.HomeContract.View view;
     private final UpdateStockUsecase updateStockUsecase;
     private final AddTakeOffVolumnUsecase addTakeOffVolumnUsecase;
     private final AddCustomerUsecase addCustomerUsecase;
@@ -77,7 +78,7 @@ public class HomePresenter implements HomeContract.Presenter {
     LocalRepository localRepository;
 
     @Inject
-    HomePresenter(@NonNull HomeContract.View view, UpdateStockUsecase updateStockUsecase,
+    HomePresenter(@NonNull com.demo.sp19.screen.home.HomeContract.View view, UpdateStockUsecase updateStockUsecase,
                   AddTakeOffVolumnUsecase addTakeOffVolumnUsecase, AddCustomerUsecase addCustomerUsecase,
                   UploadImageUsecase uploadImageUsecase, AddCustomerProductUsecase addCustomerProductUsecase,
                   AddCustomerGiftUsecase addCustomerGiftUsecase, AddCustomerImageUsecase addCustomerImageUsecase,
@@ -228,6 +229,8 @@ public class HomePresenter implements HomeContract.Presenter {
                                     view.hideDialogDownload();
                                     countNumberUpload();
                                     view.showSuccess(CoreApplication.getInstance().getString(R.string.upload_data_success));
+
+                                    ResetDataManager.getInstance().setResetData(0);
                                 }
 
                             }
@@ -262,6 +265,8 @@ public class HomePresenter implements HomeContract.Presenter {
                                     view.hideDialogDownload();
                                     countNumberUpload();
                                     view.showSuccess(CoreApplication.getInstance().getString(R.string.upload_data_success));
+
+                                    ResetDataManager.getInstance().setResetData(0);
                                 }
                             }
                         });
@@ -296,6 +301,8 @@ public class HomePresenter implements HomeContract.Presenter {
                                     view.hideDialogDownload();
                                     countNumberUpload();
                                     view.showSuccess(CoreApplication.getInstance().getString(R.string.upload_data_success));
+
+                                    ResetDataManager.getInstance().setResetData(0);
                                 }
                             }
                         });
@@ -709,7 +716,6 @@ public class HomePresenter implements HomeContract.Presenter {
                                 }
                             });
                         }
-
                     }
                 }
             });
@@ -738,6 +744,8 @@ public class HomePresenter implements HomeContract.Presenter {
                                     view.hideDialogDownload();
                                     countNumberUpload();
                                     view.showSuccess(CoreApplication.getInstance().getString(R.string.upload_data_success));
+
+                                    ResetDataManager.getInstance().setResetData(0);
                                 }
                             }
                         });
@@ -776,6 +784,7 @@ public class HomePresenter implements HomeContract.Presenter {
                                     view.hideDialogDownload();
                                     countNumberUpload();
                                     view.showSuccess(CoreApplication.getInstance().getString(R.string.upload_data_success));
+                                    ResetDataManager.getInstance().setResetData(0);
                                 }
                             }
                         });

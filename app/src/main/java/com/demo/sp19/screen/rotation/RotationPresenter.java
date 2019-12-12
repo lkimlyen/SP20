@@ -1,11 +1,12 @@
 package com.demo.sp19.screen.rotation;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.demo.architect.data.repository.base.local.LocalRepository;
 import com.demo.architect.data.model.ChooseSetEntitiy;
 import com.demo.architect.data.model.CurrentGift;
 import com.demo.architect.data.model.OutletEntiy;
@@ -16,21 +17,37 @@ import com.demo.architect.data.model.offline.BrandSetDetailModel;
 import com.demo.architect.data.model.offline.CurrentBrandModel;
 import com.demo.architect.data.model.offline.CurrentGiftModel;
 import com.demo.architect.data.model.offline.CustomerGiftModel;
+import com.demo.architect.data.model.offline.CustomerImageModel;
 import com.demo.architect.data.model.offline.CustomerModel;
+import com.demo.architect.data.model.offline.CustomerProductModel;
 import com.demo.architect.data.model.offline.GiftModel;
+import com.demo.architect.data.model.offline.ImageModel;
 import com.demo.architect.data.model.offline.ProductGiftModel;
 import com.demo.architect.data.model.offline.TimeRotationModel;
 import com.demo.architect.data.model.offline.TotalChangeGiftModel;
 import com.demo.architect.data.model.offline.TotalRotationBrandModel;
+import com.demo.architect.data.repository.base.local.LocalRepository;
+import com.demo.architect.domain.AddBrandSetUsedUsecase;
+import com.demo.architect.domain.AddCustomerGiftUsecase;
+import com.demo.architect.domain.AddCustomerImageUsecase;
+import com.demo.architect.domain.AddCustomerProductUsecase;
+import com.demo.architect.domain.AddCustomerUsecase;
 import com.demo.architect.domain.BaseUseCase;
+import com.demo.architect.domain.SendRequestGiftUsecase;
 import com.demo.architect.domain.UpdateChangeSetUsecase;
+import com.demo.architect.domain.UpdateCurrentGiftUsecase;
+import com.demo.architect.domain.UploadImageUsecase;
+import com.demo.architect.utils.view.FileUtils;
 import com.demo.sp19.R;
 import com.demo.sp19.app.CoreApplication;
 import com.demo.sp19.manager.ChooseSetManager;
 import com.demo.sp19.manager.CurrentBrandSetManager;
 import com.demo.sp19.manager.CurrentGiftManager;
 import com.demo.sp19.manager.UserManager;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,13 +66,29 @@ public class RotationPresenter implements RotationContract.Presenter {
     private final String TAG = RotationPresenter.class.getName();
     private final RotationContract.View view;
     private final UpdateChangeSetUsecase updateChangeSetUsecase;
+    private final AddCustomerUsecase addCustomerUsecase;
+    private final UploadImageUsecase uploadImageUsecase;
+    private final AddCustomerProductUsecase addCustomerProductUsecase;
+    private final AddCustomerGiftUsecase addCustomerGiftUsecase;
+    private final AddCustomerImageUsecase addCustomerImageUsecase;
+    private final UpdateCurrentGiftUsecase updateCurrentGiftUsecase;
+    private final AddBrandSetUsedUsecase addBrandSetUsedUsecase;
+    private final SendRequestGiftUsecase sendRequestGiftUsecase;
     @Inject
     LocalRepository localRepository;
 
     @Inject
-    RotationPresenter(@NonNull RotationContract.View view, UpdateChangeSetUsecase updateChangeSetUsecase) {
+    RotationPresenter(@NonNull RotationContract.View view, UpdateChangeSetUsecase updateChangeSetUsecase, AddCustomerUsecase addCustomerUsecase, UploadImageUsecase uploadImageUsecase, AddCustomerProductUsecase addCustomerProductUsecase, AddCustomerGiftUsecase addCustomerGiftUsecase, AddCustomerImageUsecase addCustomerImageUsecase, UpdateCurrentGiftUsecase updateCurrentGiftUsecase, AddBrandSetUsedUsecase addBrandSetUsedUsecase, SendRequestGiftUsecase sendRequestGiftUsecase) {
         this.view = view;
         this.updateChangeSetUsecase = updateChangeSetUsecase;
+        this.addCustomerUsecase = addCustomerUsecase;
+        this.uploadImageUsecase = uploadImageUsecase;
+        this.addCustomerProductUsecase = addCustomerProductUsecase;
+        this.addCustomerGiftUsecase = addCustomerGiftUsecase;
+        this.addCustomerImageUsecase = addCustomerImageUsecase;
+        this.updateCurrentGiftUsecase = updateCurrentGiftUsecase;
+        this.addBrandSetUsedUsecase = addBrandSetUsedUsecase;
+        this.sendRequestGiftUsecase = sendRequestGiftUsecase;
     }
 
     @Inject
@@ -179,6 +212,19 @@ public class RotationPresenter implements RotationContract.Presenter {
                                                 if (giftList.size() > 0) {
                                                     saveGift(customerId, giftList);
                                                 } else {
+//                                                    localRepository.getInfoSendRequest().subscribe(new Action1<List<Integer>>() {
+//                                                        @Override
+//                                                        public void call(List<Integer> list) {
+//                                                            if (list.size() > 0){
+//                                                                integerList.clear();
+//                                                                integerList.addAll(list);
+//                                                                uploadData();
+//                                                            }else {
+//                                                                goToMega(customerId);
+//                                                            }
+//
+//                                                        }
+//                                                    });
                                                     goToMega(customerId);
                                                 }
                                             }
@@ -230,6 +276,19 @@ public class RotationPresenter implements RotationContract.Presenter {
 
                                                                 saveGift(customerId, giftList);
                                                             } else {
+//                                                                localRepository.getInfoSendRequest().subscribe(new Action1<List<Integer>>() {
+//                                                                    @Override
+//                                                                    public void call(List<Integer> list) {
+//                                                                        if (list.size() > 0){
+//                                                                            integerList.clear();
+//                                                                            integerList.addAll(list);
+//                                                                            uploadData();
+//                                                                        }else {
+//                                                                            goToMega(customerId);
+//                                                                        }
+//
+//                                                                    }
+//                                                                });
                                                                 goToMega(customerId);
                                                             }
                                                         }
@@ -264,6 +323,20 @@ public class RotationPresenter implements RotationContract.Presenter {
 //lưu thông tin quà của customer
                                 saveGift(customerId, giftList);
                             } else {
+//                                localRepository.getInfoSendRequest().subscribe(new Action1<List<Integer>>() {
+//                                    @Override
+//                                    public void call(List<Integer> list) {
+//                                        if (list.size() > 0){
+//                                            integerList.clear();
+//                                            integerList.addAll(list);
+//                                            uploadData();
+//                                        }else {
+//                                            goToMega(customerId);
+//                                        }
+//
+//                                    }
+//                                });
+
                                 goToMega(customerId);
                             }
                         }
@@ -315,7 +388,7 @@ public class RotationPresenter implements RotationContract.Presenter {
         });
     }
 
-
+private List<Integer> integerList = new ArrayList<Integer>();
     @Override
     public void saveGift(int customerId, LinkedHashMap<GiftModel, Integer> listChooseGift) {
         UserEntity user = UserManager.getInstance().getUser();
@@ -327,10 +400,19 @@ public class RotationPresenter implements RotationContract.Presenter {
                 giftModelList.add(giftModel);
             }
         }
-        localRepository.addCustomerGiftModel(giftModelList, customerId).subscribe(new Action1<String>() {
+        localRepository.addCustomerGiftModel(giftModelList, customerId).subscribe(new Action1<List<Integer>>() {
             @Override
-            public void call(String s) {
-                goToMega(customerId);
+            public void call(List<Integer> list) {
+                // view.showSuccess(CoreApplication.getInstance().getString(R.string.text_save_success));
+                //goToMega(customerId);
+//                if (list.size() > 0) {
+//                    integerList.clear();
+//                    integerList.addAll(list);
+//                    uploadData();
+//                } else {
+                    view.showSuccess(CoreApplication.getInstance().getString(R.string.text_save_success));
+//                }
+
             }
         });
     }
@@ -347,6 +429,19 @@ public class RotationPresenter implements RotationContract.Presenter {
                 saveGift(customerId, listGift);
             } else {
                 goToMega(customerId);
+//                localRepository.getInfoSendRequest().subscribe(new Action1<List<Integer>>() {
+//                    @Override
+//                    public void call(List<Integer> list) {
+//                        if (list.size() > 0){
+//                            integerList.clear();
+//                            integerList.addAll(list);
+//                            uploadData();
+//                        }else {
+//                            goToMega(customerId);
+//                        }
+//
+//                    }
+//                });
             }
         }
     }
@@ -384,4 +479,447 @@ public class RotationPresenter implements RotationContract.Presenter {
 
         return customerGiftModels;
     }
+
+    public void uploadData() {
+        view.showProgressBar();
+        UserEntity userEntity = UserManager.getInstance().getUser();
+        localRepository.getListCustomerWaitingUpload(userEntity.getOutlet().getOutletId()).subscribe(new Action1<LinkedHashMap<CustomerModel, List<ImageModel>>>() {
+            @Override
+            public void call(LinkedHashMap<CustomerModel, List<ImageModel>> customerModelListLinkedHashMap) {
+
+                if (customerModelListLinkedHashMap.size() > 0) {
+                    List<CustomerModel> customerList = new ArrayList<>(customerModelListLinkedHashMap.keySet());
+                    positionCustomer = 0;
+                    uploadCustomerGift(customerList, customerModelListLinkedHashMap);
+                } else {
+                    localRepository.getListWaitingUpload(userEntity.getTeamOutletId(), userEntity.getOutlet().getOutletId()).subscribe(new Action1<LinkedHashMap<String, String>>() {
+                        @Override
+                        public void call(LinkedHashMap<String, String> list) {
+                            if (list.size() > 0) {
+                                List<String> keys = new ArrayList<>(list.keySet());
+                                positionUpload = 0;
+                                uploadAllData(keys, list, userEntity.getTeamOutletId(), userEntity.getOutlet().getOutletId(), true);
+                            } else {
+                                sendRequestGift();
+                                view.hideProgressBar();
+                            }
+
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+
+    private int positionCustomer = 0;
+
+    public void uploadCustomerGift(List<CustomerModel> customerList, LinkedHashMap<CustomerModel, List<ImageModel>> list) {
+        UserEntity userEntity = UserManager.getInstance().getUser();
+        GsonBuilder builder = new GsonBuilder();
+        builder.excludeFieldsWithoutExposeAnnotation();
+        Gson gson = builder.create();
+        CustomerModel customerModel = customerList.get(positionCustomer);
+        String json = gson.toJson(customerModel);
+        if (customerModel.getServerId() == -1) {
+            addCustomerUsecase.executeIO(new AddCustomerUsecase.RequestValue(json),
+                    new BaseUseCase.UseCaseCallback<AddCustomerUsecase.ResponseValue,
+                            AddCustomerUsecase.ErrorValue>() {
+                        @Override
+                        public void onSuccess(AddCustomerUsecase.ResponseValue successResponse) {
+                            localRepository.addCustomerServerId(customerModel.getId(), successResponse.getId()).subscribe(new Action1<String>() {
+                                @Override
+                                public void call(String s) {
+                                    if (list.get(customerModel).size() > 0) {
+                                        positionImage = 0;
+                                        uploadImage(customerList, list, list.get(customerModel));
+                                    } else {
+                                        if (positionCustomer < customerList.size() - 1) {
+                                            positionCustomer++;
+                                            uploadCustomerGift(customerList, list);
+                                        } else {
+                                            localRepository.getListWaitingUpload(userEntity.getTeamOutletId(), userEntity.getOutlet().getOutletId()).subscribe(new Action1<LinkedHashMap<String, String>>() {
+                                                @Override
+                                                public void call(LinkedHashMap<String, String> list) {
+                                                    if (list.size() > 0) {
+                                                        List<String> keys = new ArrayList<>(list.keySet());
+                                                        positionUpload = 0;
+                                                        uploadAllData(keys, list, userEntity.getTeamOutletId(), userEntity.getOutlet().getOutletId(), false);
+                                                    } else {
+                                                        localRepository.updateStatusCustomer().subscribe(new Action1<String>() {
+                                                            @Override
+                                                            public void call(String s) {
+sendRequestGift();
+                                                                view.hideProgressBar();
+
+                                                            }
+                                                        });
+                                                    }
+
+                                                }
+                                            });
+                                        }
+                                    }
+                                    //  uploadImage();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onError(AddCustomerUsecase.ErrorValue errorResponse) {
+                            if (errorResponse.getDescription().contains(CoreApplication.getInstance().getString(R.string.text_no_address_associated))) {
+                                view.showError(CoreApplication.getInstance().getString(R.string.text_no_internet_connection));
+                            } else {
+                                view.showError(errorResponse.getDescription());
+                            }view.showUploadRetry();
+                            view.hideProgressBar();
+
+                        }
+                    });
+        } else {
+
+            if (list.get(customerModel).size() > 0) {
+                positionImage = 0;
+                uploadImage(customerList, list, list.get(customerModel));
+            } else {
+                if (positionCustomer < customerList.size() - 1) {
+                    positionCustomer++;
+                    uploadCustomerGift(customerList, list);
+                } else {
+                    localRepository.getListWaitingUpload(userEntity.getTeamOutletId(), userEntity.getOutlet().getOutletId()).subscribe(new Action1<LinkedHashMap<String, String>>() {
+                        @Override
+                        public void call(LinkedHashMap<String, String> list) {
+                            if (list.size() > 0) {
+                                List<String> keys = new ArrayList<>(list.keySet());
+                                positionUpload = 0;
+                                uploadAllData(keys, list, userEntity.getTeamOutletId(), userEntity.getOutlet().getOutletId(), false);
+                            } else {
+                                localRepository.updateStatusCustomer().subscribe(new Action1<String>() {
+                                    @Override
+                                    public void call(String s) {
+sendRequestGift();
+                                        view.hideProgressBar();
+                                    }
+                                });
+                            }
+
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    private int positionImage = 0;
+
+    public void uploadImage(List<CustomerModel> customerList, LinkedHashMap<CustomerModel, List<ImageModel>> list,
+                            List<ImageModel> imageList) {
+        UserEntity userEntity = UserManager.getInstance().getUser();
+        ImageModel imageModel = imageList.get(positionImage);
+        Bitmap bitmap = BitmapFactory.decodeFile(imageModel.getPath());
+        if (bitmap != null) {
+            bitmap = FileUtils.getResizedBitmap(bitmap, 800);
+            File file = FileUtils.bitmapToFile(bitmap, imageModel.getPath());
+            uploadImageUsecase.executeIO(new UploadImageUsecase.RequestValue(file, imageModel.getImageCode(),
+                            imageModel.getCreatedBy(), imageModel.getDateCreate(), imageModel.getLatitude(), imageModel.getLongitude(),
+                            imageModel.getImageType(), imageModel.getFileName()),
+                    new BaseUseCase.UseCaseCallback<UploadImageUsecase.ResponseValue, UploadImageUsecase.ErrorValue>() {
+                        @Override
+                        public void onSuccess(UploadImageUsecase.ResponseValue successResponse) {
+                            localRepository.addCustomerImageServerId(customerList.get(positionCustomer).getId(),
+                                    imageModel.getId(), successResponse.getId()).subscribe(new Action1<String>() {
+                                @Override
+                                public void call(String s) {
+                                    if (positionImage < imageList.size() - 1) {
+                                        positionImage++;
+                                        uploadImage(customerList, list, imageList);
+                                    } else {
+                                        if (positionCustomer < customerList.size() - 1) {
+                                            positionCustomer++;
+                                            uploadCustomerGift(customerList, list);
+                                        } else {
+                                            localRepository.getListWaitingUpload(userEntity.getTeamOutletId(), userEntity.getOutlet().getOutletId()).subscribe(new Action1<LinkedHashMap<String, String>>() {
+                                                @Override
+                                                public void call(LinkedHashMap<String, String> list) {
+                                                    List<String> keys = new ArrayList<>(list.keySet());
+                                                    positionUpload = 0;
+                                                    uploadAllData(keys, list, userEntity.getTeamOutletId(), userEntity.getOutlet().getOutletId(), false);
+                                                }
+                                            });
+                                        }
+
+                                    }
+                                }
+                            });
+
+                        }
+
+                        @Override
+                        public void onError(UploadImageUsecase.ErrorValue errorResponse) {
+                            if (errorResponse.getDescription().contains(CoreApplication.getInstance().getString(R.string.text_no_address_associated))) {
+                                view.showError(CoreApplication.getInstance().getString(R.string.text_no_internet_connection));
+                            } else {
+                                view.showError(errorResponse.getDescription());
+
+                            }
+                            view.hideProgressBar();
+
+                        }
+                    });
+
+        } else {
+            localRepository.updateStatusCustomerImageById(imageModel.getId()).subscribe(new Action1<String>() {
+                @Override
+                public void call(String s) {
+                    if (positionImage < imageList.size() - 1) {
+                        positionImage++;
+                        uploadImage(customerList, list, imageList);
+                    } else {
+                        if (positionCustomer < customerList.size() - 1) {
+                            positionCustomer++;
+                            uploadCustomerGift(customerList, list);
+                        } else {
+                            localRepository.getListWaitingUpload(userEntity.getTeamOutletId(), userEntity.getOutlet().getOutletId()).subscribe(new Action1<LinkedHashMap<String, String>>() {
+                                @Override
+                                public void call(LinkedHashMap<String, String> list) {
+                                    List<String> keys = new ArrayList<>(list.keySet());
+                                    positionUpload = 0;
+                                    uploadAllData(keys, list, userEntity.getTeamOutletId(), userEntity.getOutlet().getOutletId(), false);
+                                }
+                            });
+                        }
+
+                    }
+                }
+            });
+        }
+
+    }
+
+    private int positionUpload = 0;
+
+    public void uploadAllData(List<String> keys, LinkedHashMap<String, String> list, int teamId, int outletId, boolean first) {
+
+        String key = keys.get(positionUpload);
+        String json = (String) list.get(key);
+        if (key.equals(CustomerProductModel.class.getName())) {
+            addCustomerProduct(json, teamId, outletId, keys, list);
+        } else if (key.equals(CustomerGiftModel.class.getName())) {
+            addCustomerGift(json, teamId, outletId, keys, list);
+        } else if (key.equals(CustomerImageModel.class.getName())) {
+            addCustomerImage(json, teamId, outletId, keys, list);
+        } else if (key.equals(CurrentGiftModel.class.getName())) {
+            uploadCurrentGift(json, teamId, outletId, keys, list);
+        } else if (key.equals(CurrentBrandModel.class.getName())) {
+            uploadCurrentBrand(json, teamId, outletId, keys, list);
+        } else {
+            positionUpload = positionUpload + 1;
+            uploadAllData(keys, list, teamId, outletId, false);
+        }
+    }
+
+    public void addCustomerProduct(String json, int teamId, int outletId, List<String> keys, LinkedHashMap<String, String> list) {
+
+        addCustomerProductUsecase.executeIO(new AddCustomerProductUsecase.RequestValue(json),
+                new BaseUseCase.UseCaseCallback<AddCustomerProductUsecase.ResponseValue,
+                        AddCustomerProductUsecase.ErrorValue>() {
+                    @Override
+                    public void onSuccess(AddCustomerProductUsecase.ResponseValue successResponse) {
+
+                        localRepository.updateStatusCustomerProduct(outletId).subscribe(new Action1<String>() {
+                            @Override
+                            public void call(String s) {
+                                if (positionUpload < list.size() - 1) {
+                                    positionUpload++;
+                                    uploadAllData(keys, list, teamId, outletId, false);
+                                } else {
+
+                                    //view.showSuccess(CoreApplication.getInstance().getString(R.string.upload_data_success));
+                                    sendRequestGift();
+                                }
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onError(AddCustomerProductUsecase.ErrorValue errorResponse) {
+                        if (errorResponse.getDescription().contains(CoreApplication.getInstance().getString(R.string.text_no_address_associated))) {
+                            view.showError(CoreApplication.getInstance().getString(R.string.text_no_internet_connection));
+                        } else {
+                            view.showError(errorResponse.getDescription());
+                        }
+                        view.showUploadRetry();
+                        view.hideProgressBar();
+                    }
+                });
+    }
+
+    public void addCustomerGift(String json, int teamId, int outletId, List<String> keys, LinkedHashMap<String, String> list) {
+        addCustomerGiftUsecase.executeIO(new AddCustomerGiftUsecase.RequestValue(json),
+                new BaseUseCase.UseCaseCallback<AddCustomerGiftUsecase.ResponseValue,
+                        AddCustomerGiftUsecase.ErrorValue>() {
+                    @Override
+                    public void onSuccess(AddCustomerGiftUsecase.ResponseValue successResponse) {
+                        localRepository.updateStatusCustomerGift(outletId).subscribe(new Action1<String>() {
+                            @Override
+                            public void call(String s) {
+                                if (positionUpload < list.size() - 1) {
+                                    positionUpload++;
+                                    uploadAllData(keys, list, teamId, outletId, false);
+                                } else {
+
+                                   // view.showSuccess(CoreApplication.getInstance().getString(R.string.upload_data_success));
+                                    sendRequestGift();
+                                }
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onError(AddCustomerGiftUsecase.ErrorValue errorResponse) {
+                        if (errorResponse.getDescription().contains(CoreApplication.getInstance().getString(R.string.text_no_address_associated))) {
+                            view.showError(CoreApplication.getInstance().getString(R.string.text_no_internet_connection));
+                        } else {
+                            view.showError(errorResponse.getDescription());
+                        }
+                        view.showUploadRetry();
+                        view.hideProgressBar();
+                    }
+                });
+    }
+
+    public void addCustomerImage(String json, int teamId, int outletId, List<String> keys, LinkedHashMap<String, String> list) {
+        addCustomerImageUsecase.executeIO(new AddCustomerImageUsecase.RequestValue(json),
+                new BaseUseCase.UseCaseCallback<AddCustomerImageUsecase.ResponseValue,
+                        AddCustomerImageUsecase.ErrorValue>() {
+                    @Override
+                    public void onSuccess(AddCustomerImageUsecase.ResponseValue successResponse) {
+                        localRepository.updateStatusCustomerImage(outletId).subscribe(new Action1<Integer>() {
+                            @Override
+                            public void call(Integer size) {
+
+                                if (positionUpload < list.size() - 1) {
+                                    positionUpload++;
+                                    uploadAllData(keys, list, teamId, outletId, true);
+                                } else {
+
+                                   // view.showSuccess(CoreApplication.getInstance().getString(R.string.upload_data_success));
+                                    sendRequestGift();
+                                }
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onError(AddCustomerImageUsecase.ErrorValue errorResponse) {
+                        if (errorResponse.getDescription().contains(CoreApplication.getInstance().getString(R.string.text_no_address_associated))) {
+                            view.showError(CoreApplication.getInstance().getString(R.string.text_no_internet_connection));
+                        } else {
+                            view.showError(errorResponse.getDescription());
+
+                        }
+                        view.showUploadRetry();
+                        view.hideProgressBar();
+                    }
+                });
+    }
+
+    private void uploadCurrentGift(String json, int teamId, int outletId, List<String> keys, LinkedHashMap<String, String> list) {
+        updateCurrentGiftUsecase.executeIO(new UpdateCurrentGiftUsecase.RequestValue(json),
+                new BaseUseCase.UseCaseCallback<UpdateCurrentGiftUsecase.ResponseValue,
+                        UpdateCurrentGiftUsecase.ErrorValue>() {
+                    @Override
+                    public void onSuccess(UpdateCurrentGiftUsecase.ResponseValue successResponse) {
+                        localRepository.updateStatusCurrentGift(outletId).subscribe(new Action1<Integer>() {
+                            @Override
+                            public void call(Integer integer) {
+                                if (positionUpload < list.size() - 1) {
+                                    positionUpload++;
+                                    uploadAllData(keys, list, teamId, outletId, true);
+                                } else {
+                                    //view.showSuccess(CoreApplication.getInstance().getString(R.string.upload_data_success));
+                                    sendRequestGift();
+                                }
+                            }
+                        });
+
+
+                    }
+
+                    @Override
+                    public void onError(UpdateCurrentGiftUsecase.ErrorValue errorResponse) {
+                        view.showError(errorResponse.getDescription());
+                        view.showUploadRetry();
+                        view.hideProgressBar();
+
+                    }
+                });
+    }
+
+    private void uploadCurrentBrand(String json, int teamId, int outletId, List<String> keys, LinkedHashMap<String, String> list) {
+        addBrandSetUsedUsecase.executeIO(new AddBrandSetUsedUsecase.RequestValue(json),
+                new BaseUseCase.UseCaseCallback<AddBrandSetUsedUsecase.ResponseValue,
+                        AddBrandSetUsedUsecase.ErrorValue>() {
+                    @Override
+                    public void onSuccess(AddBrandSetUsedUsecase.ResponseValue successResponse) {
+                        localRepository.updateStatusCurrentBrand(outletId).subscribe(new Action1<Integer>() {
+                            @Override
+                            public void call(Integer integer) {
+
+                                if (positionUpload < list.size() - 1) {
+                                    positionUpload++;
+                                    uploadAllData(keys, list, teamId, outletId, true);
+                                } else {
+
+                                  //  view.showSuccess(CoreApplication.getInstance().getString(R.string.upload_data_success));
+                                    sendRequestGift();
+
+                                }
+
+                            }
+                        });
+
+
+                    }
+
+                    @Override
+                    public void onError(AddBrandSetUsedUsecase.ErrorValue errorResponse) {
+                        if (errorResponse.getDescription().contains(CoreApplication.getInstance().getString(R.string.text_no_address_associated))) {
+                            view.showError(CoreApplication.getInstance().getString(R.string.text_no_internet_connection));
+                        } else {
+                            view.showError(errorResponse.getDescription());
+                        }
+                        view.hideProgressBar();
+                        view.showUploadRetry();
+                    }
+                });
+    }
+
+    private void sendRequestGift(){
+        sendRequestGiftUsecase.executeIO(new SendRequestGiftUsecase.RequestValue(UserManager.getInstance().getUser().getUserId(), integerList),
+                new BaseUseCase.UseCaseCallback<SendRequestGiftUsecase.ResponseValue,
+                        SendRequestGiftUsecase.ErrorValue>() {
+                    @Override
+                    public void onSuccess(SendRequestGiftUsecase.ResponseValue successResponse) {
+                      view.showSuccess("Gửi yêu cầu quà thành công");
+                        view.hideProgressBar();
+                    }
+
+                    @Override
+                    public void onError(SendRequestGiftUsecase.ErrorValue errorResponse) {
+                        if (errorResponse.getDescription().contains(CoreApplication.getInstance().getString(R.string.text_no_address_associated))) {
+                            view.showError(CoreApplication.getInstance().getString(R.string.text_no_internet_connection));
+                        } else {
+                            view.showError(errorResponse.getDescription());
+                        }
+                        view.hideProgressBar();
+                        view.showUploadRetry();
+                    }
+                });
+    }
+
 }

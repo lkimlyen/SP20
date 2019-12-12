@@ -1,11 +1,8 @@
 package com.demo.sp19.screen.dashboard;
 
 
-import com.demo.architect.data.model.OutletEntiy;
 import com.demo.sp19.app.base.BasePresenter;
 import com.demo.sp19.app.base.BaseView;
-
-import java.util.List;
 
 /**
  * Created by MSI on 26/11/2017.
@@ -28,5 +25,7 @@ public interface DashboardContract {
         void downloadFromServer();
 
         void downloadTask(int positionTask);
+
+        void clearData();
     }
 }

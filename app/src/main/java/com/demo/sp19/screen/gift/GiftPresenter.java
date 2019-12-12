@@ -4,17 +4,16 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.demo.architect.data.repository.base.local.LocalRepository;
 import com.demo.architect.data.model.UserEntity;
 import com.demo.architect.data.model.offline.BrandModel;
 import com.demo.architect.data.model.offline.CustomerGiftModel;
-import com.demo.architect.data.model.offline.CustomerImageModel;
 import com.demo.architect.data.model.offline.CustomerModel;
 import com.demo.architect.data.model.offline.CustomerProductModel;
 import com.demo.architect.data.model.offline.ImageModel;
 import com.demo.architect.data.model.offline.ProductModel;
 import com.demo.architect.data.model.offline.TotalChangeGiftModel;
 import com.demo.architect.data.model.offline.TotalRotationBrandModel;
+import com.demo.architect.data.repository.base.local.LocalRepository;
 import com.demo.architect.domain.GetCurrentBrandSetUsecase;
 import com.demo.architect.domain.UpdateChangeSetUsecase;
 import com.demo.architect.utils.view.ConvertUtils;
@@ -78,20 +77,21 @@ public class GiftPresenter implements GiftContract.Presenter {
         UserEntity userEntity = UserManager.getInstance().getUser();
         List<Integer> idList = OutletBrandManager.getInstance().getOutletBrandList(userEntity.getOutlet().getOutletId());
         //lấy ds product theo brand id
-        localRepository.getListProductByBrandId(idList).subscribe(new Action1<List<ProductModel>>() {
+        localRepository.getListProductByBrandId(idList).subscribe(new Action1<List<Object>>() {
             @Override
-            public void call(List<ProductModel> productModels) {
-                view.showListProductChangeGift(productModels);
+            public void call(List<Object> productModels) {
+                view.showListProductChangeGift((List<ProductModel>) productModels.get(0));
+                BrandManager.getInstance().setBrandList((List<BrandModel>) productModels.get(1));
             }
         });
 
-        //lấy ds brand đang chạy
-        localRepository.getListBrandById(idList).subscribe(new Action1<List<BrandModel>>() {
-            @Override
-            public void call(List<BrandModel> list) {
-                BrandManager.getInstance().setBrandList(list);
-            }
-        });
+//        //lấy ds brand đang chạy
+//        localRepository.getListBrandById(idList).subscribe(new Action1<List<BrandModel>>() {
+//            @Override
+//            public void call(List<BrandModel> list) {
+//
+//            }
+//        });
     }
 
 
@@ -115,17 +115,12 @@ public class GiftPresenter implements GiftContract.Presenter {
     public void checkCustomerPhone(String phone) {
         List<Integer> idList = OutletBrandManager.getInstance().getOutletBrandList(UserManager.getInstance().getUser().getOutlet().getOutletId());
         //check sl đổi quà theo sđt
-        localRepository.checkCustomerPhone(phone, idList).subscribe(new Action1<LinkedHashMap<CustomerModel, List<CustomerGiftModel>>>() {
+        localRepository.checkCustomerPhone(phone, idList).subscribe(new Action1<List<Object>>() {
             @Override
-            public void call(LinkedHashMap<CustomerModel, List<CustomerGiftModel>> customerModelListLinkedHashMap) {
+            public void call(List<Object> customerModelListLinkedHashMap) {
 
-                //lấy số quà của khách hàng theo brand
-                localRepository.getListNumberGiftWithBrand(phone, idList).subscribe(new Action1<LinkedHashMap<BrandModel, Integer>>() {
-                    @Override
-                    public void call(LinkedHashMap<BrandModel, Integer> brandModelIntegerLinkedHashMap) {
-                        view.showCustomerPhone(customerModelListLinkedHashMap, brandModelIntegerLinkedHashMap);
-                    }
-                });
+                view.showCustomerPhone((LinkedHashMap<CustomerModel, List<CustomerGiftModel>>) customerModelListLinkedHashMap.get(0), (LinkedHashMap<BrandModel, Integer>) customerModelListLinkedHashMap.get(1));
+
 
             }
         });
@@ -143,91 +138,140 @@ public class GiftPresenter implements GiftContract.Presenter {
 
 
     @Override
-    public void saveInfoCustomer(String orderCode, String cusCode, String cusName, String phone, String address, String note,
-                                 List<String> imagePath, LinkedHashMap<ProductModel, Integer> numberProductList,
-                                 LinkedHashMap<Integer, Integer> brandList, LinkedHashMap<ProductModel, Integer> productChooseNumberList, int totalRotaion) {
+    public void saveInfoCustomer(String orderCode, String cusCode, String cusName, String phone, String sex, String email, int yearOfBirth, String reasonBuy,
+                                 String note, List<String> imagePath, LinkedHashMap<ProductModel, Integer> numberProductList,
+                                 LinkedHashMap<Integer, Integer> brandList,
+                                 LinkedHashMap<ProductModel, Integer> productChooseNumberList, int totalRotaion) {
         UserEntity user = UserManager.getInstance().getUser();
         CustomerModel customerModel = new CustomerModel(user.getOutlet().getOutletId(), cusName, cusCode,
-                phone, orderCode, address, note, user.getTeamOutletId());
+                phone, orderCode, sex, email, yearOfBirth, reasonBuy, note, user.getTeamOutletId());
         //lưu thông tin của customer
-        localRepository.addCustomerModel(customerModel).subscribe(new Action1<Integer>() {
-            @Override
-            public void call(Integer id) {
-                int customerId = id;
-                List<CustomerProductModel> productModelList = new ArrayList<>();
-                for (Map.Entry<ProductModel, Integer> map : numberProductList.entrySet()) {
-                    CustomerProductModel customerProductModel = new CustomerProductModel(customerId, user.getOutlet().getOutletId(), map.getKey().getId(), map.getValue(), user.getTeamOutletId());
-                    productModelList.add(customerProductModel);
-                }
-//lưu thông tin sản phẩm đổi quà
-                localRepository.addCustomerProductModel(productModelList).subscribe(new Action1<String>() {
+        List<Object> list = new ArrayList<>();
+        list.add(customerModel);
+        List<CustomerProductModel> productModelList = new ArrayList<>();
+        for (Map.Entry<ProductModel, Integer> map : numberProductList.entrySet()) {
+            CustomerProductModel customerProductModel = new CustomerProductModel(user.getOutlet().getOutletId(), map.getKey().getId(), map.getValue(), user.getTeamOutletId());
+            productModelList.add(customerProductModel);
+        }
+        list.add(productModelList);
+
+        List<ImageModel> imageModels = new ArrayList<>();
+        for (String path : imagePath) {
+            String nameFile = path.substring(path.lastIndexOf("/") + 1);
+            ImageModel imageModel = new ImageModel(0, 0, nameFile, path, 2, user.getTeamOutletId());
+            imageModels.add(imageModel);
+        }
+        list.add(imageModels);
+        List<TotalChangeGiftModel> totalChangeGiftModels = new ArrayList<>();
+
+        if (productChooseNumberList.size() > 0) {
+            for (Map.Entry<ProductModel, Integer> map : productChooseNumberList.entrySet()) {
+                TotalChangeGiftModel totalChangeGiftModel = new TotalChangeGiftModel( map.getKey().getId(),
+                        map.getKey().getBrandID(), map.getValue());
+                totalChangeGiftModels.add(totalChangeGiftModel);
+            }
+
+        }
+
+        list.add(totalChangeGiftModels);
+        List<TotalRotationBrandModel> rotationBrandModelList = new ArrayList<>();
+        List<Integer> listId = new ArrayList<>(brandList.keySet());
+        Collections.sort(listId);
+        for (Integer brandId : listId) {
+            TotalRotationBrandModel totalRotationBrandModel = new TotalRotationBrandModel( brandId, brandList.get(brandId));
+            rotationBrandModelList.add(totalRotationBrandModel);
+        }
+        list.add(rotationBrandModelList);
+
+        localRepository.saveInfoChangeGift(list).
+
+                subscribe(new Action1<Integer>() {
                     @Override
-                    public void call(String s) {
-                        List<ImageModel> imageModels = new ArrayList<>();
-                        for (String path : imagePath) {
-                            String nameFile = path.substring(path.lastIndexOf("/") + 1);
-                            ImageModel imageModel = new ImageModel(0, 0, nameFile, path, 2, user.getTeamOutletId());
-                            imageModels.add(imageModel);
-                        }
-//lưu hình hóa đơn
-                        localRepository.addImageModel(imageModels).subscribe(new Action1<List<Integer>>() {
-                            @Override
-                            public void call(List<Integer> integers) {
-                                List<CustomerImageModel> customerImageModelList = new ArrayList<>();
-                                for (Integer imageId : integers) {
-                                    CustomerImageModel customerImageModel = new CustomerImageModel(customerId, user.getOutlet().getOutletId(), imageId, user.getTeamOutletId());
-                                    customerImageModelList.add(customerImageModel);
-                                }
-
-                                //lấy id hình hóa đơn lưu vào customer
-                                localRepository.addCustomerImageModel(customerImageModelList).subscribe(new Action1<String>() {
-                                    @Override
-                                    public void call(String s) {
-                                        Date dateStartSP = ConvertUtils.ConvertStringToShortDate("23/12/2018 00:00:00");
-                                        Date dateCurrent = ConvertUtils.ConvertStringToShortDate(ConvertUtils.getDateTimeCurrentShort());
-                                        //kiểm tra xem outlet này có quay vòng quay mega ko
-                                        if (user.getOutlet().isLuckyMega()) {
-                                            //lưu tổng số vòng quay theo từng brand
-                                            localRepository.saveTotalRotaion(customerId, totalRotaion, UserManager.getInstance().getUser().getTeamOutletId()).subscribe(new Action1<String>() {
-                                                @Override
-                                                public void call(String string) {
-                                                    if (dateCurrent.before(dateStartSP)) {
-                                                        view.goToRotationMega(customerId);
-                                                    } else {
-                                                        if (productChooseNumberList.size() > 0) {
-                                                            saveNumberChooseGift(customerId, productChooseNumberList);
-                                                        }
-                                                        if (brandList.size() > 0) {
-                                                            saveTotalBrandModel(customerId, brandList);
-                                                        } else {
-                                                            view.goToRotationSP(customerId);
-                                                        }
-                                                    }
-                                                    view.showSuccess(CoreApplication.getInstance().getString(R.string.text_save_success));
-                                                }
-                                            });
-                                        } else {
-                                            //lưu sl quà được đổi theo product
-                                            if (productChooseNumberList.size() > 0) {
-                                                saveNumberChooseGift(customerId, productChooseNumberList);
-                                            }
-                                            //lưu tổng số vòng quay theo từng brand
-                                            if (brandList.size() > 0) {
-                                                saveTotalBrandModel(customerId, brandList);
-                                            } else {
-                                                view.goToRotationSP(customerId);
-                                                view.showSuccess(CoreApplication.getInstance().getString(R.string.text_save_success));
-                                            }
-                                        }
-
-                                    }
-                                });
-                            }
-                        });
+                    public void call(Integer integer) {
+                        view.goToRotationSP(integer);
+                        view.showSuccess(CoreApplication.getInstance().getString(R.string.text_save_success));
                     }
                 });
-            }
-        });
+//        localRepository.addCustomerModel(customerModel).
+//
+//                subscribe(new Action1<Integer>() {
+//                    @Override
+//                    public void call(Integer id) {
+//                        int customerId = id;
+//                        List<CustomerProductModel> productModelList = new ArrayList<>();
+//                        for (Map.Entry<ProductModel, Integer> map : numberProductList.entrySet()) {
+//                            CustomerProductModel customerProductModel = new CustomerProductModel(customerId, user.getOutlet().getOutletId(), map.getKey().getId(), map.getValue(), user.getTeamOutletId());
+//                            productModelList.add(customerProductModel);
+//                        }
+////lưu thông tin sản phẩm đổi quà
+//                        localRepository.addCustomerProductModel(productModelList).subscribe(new Action1<String>() {
+//                            @Override
+//                            public void call(String s) {
+//                                List<ImageModel> imageModels = new ArrayList<>();
+//                                for (String path : imagePath) {
+//                                    String nameFile = path.substring(path.lastIndexOf("/") + 1);
+//                                    ImageModel imageModel = new ImageModel(0, 0, nameFile, path, 2, user.getTeamOutletId());
+//                                    imageModels.add(imageModel);
+//                                }
+////lưu hình hóa đơn
+//                                localRepository.addImageModel(imageModels).subscribe(new Action1<List<Integer>>() {
+//                                    @Override
+//                                    public void call(List<Integer> integers) {
+//                                        List<CustomerImageModel> customerImageModelList = new ArrayList<>();
+//                                        for (Integer imageId : integers) {
+//                                            CustomerImageModel customerImageModel = new CustomerImageModel(customerId, user.getOutlet().getOutletId(), imageId, user.getTeamOutletId());
+//                                            customerImageModelList.add(customerImageModel);
+//                                        }
+//
+//                                        //lấy id hình hóa đơn lưu vào customer
+//                                        localRepository.addCustomerImageModel(customerImageModelList).subscribe(new Action1<String>() {
+//                                            @Override
+//                                            public void call(String s) {
+//                                                Date dateStartSP = ConvertUtils.ConvertStringToShortDate("23/12/2018 00:00:00");
+//                                                Date dateCurrent = ConvertUtils.ConvertStringToShortDate(ConvertUtils.getDateTimeCurrentShort());
+//                                                //kiểm tra xem outlet này có quay vòng quay mega ko
+//                                                if (user.getOutlet().isLuckyMega()) {
+//                                                    //lưu tổng số vòng quay theo từng brand
+//                                                    localRepository.saveTotalRotaion(customerId, totalRotaion, UserManager.getInstance().getUser().getTeamOutletId()).subscribe(new Action1<String>() {
+//                                                        @Override
+//                                                        public void call(String string) {
+//                                                            if (dateCurrent.before(dateStartSP)) {
+//                                                                view.goToRotationMega(customerId);
+//                                                            } else {
+//                                                                if (productChooseNumberList.size() > 0) {
+//                                                                    saveNumberChooseGift(customerId, productChooseNumberList);
+//                                                                }
+//                                                                if (brandList.size() > 0) {
+//                                                                    saveTotalBrandModel(customerId, brandList);
+//                                                                } else {
+//                                                                    view.goToRotationSP(customerId);
+//                                                                }
+//                                                            }
+//                                                            view.showSuccess(CoreApplication.getInstance().getString(R.string.text_save_success));
+//                                                        }
+//                                                    });
+//                                                } else {
+//                                                    //lưu sl quà được đổi theo product
+//                                                    if (productChooseNumberList.size() > 0) {
+//                                                        saveNumberChooseGift(customerId, productChooseNumberList);
+//                                                    }
+//                                                    //lưu tổng số vòng quay theo từng brand
+//                                                    if (brandList.size() > 0) {
+//                                                        saveTotalBrandModel(customerId, brandList);
+//                                                    } else {
+//                                                        view.goToRotationSP(customerId);
+//                                                        view.showSuccess(CoreApplication.getInstance().getString(R.string.text_save_success));
+//                                                    }
+//                                                }
+//
+//                                            }
+//                                        });
+//                                    }
+//                                });
+//                            }
+//                        });
+//                    }
+//                });
     }
 
     private void saveNumberChooseGift(int customerId, LinkedHashMap<ProductModel, Integer> productChooseNumberList) {

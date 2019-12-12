@@ -2,16 +2,13 @@ package com.demo.sp19.screen.rotation;
 
 
 import com.demo.architect.data.model.CurrentGift;
-import com.demo.architect.data.model.UserEntity;
 import com.demo.architect.data.model.offline.BackgroundDialModel;
 import com.demo.architect.data.model.offline.BrandModel;
 import com.demo.architect.data.model.offline.BrandSetDetailModel;
 import com.demo.architect.data.model.offline.CurrentBrandModel;
-import com.demo.architect.data.model.offline.CurrentGiftModel;
 import com.demo.architect.data.model.offline.CustomerGiftModel;
 import com.demo.architect.data.model.offline.CustomerModel;
 import com.demo.architect.data.model.offline.GiftModel;
-import com.demo.architect.data.model.offline.NotificationModel;
 import com.demo.architect.data.model.offline.ProductGiftModel;
 import com.demo.architect.data.model.offline.TotalChangeGiftModel;
 import com.demo.architect.data.model.offline.TotalRotationBrandModel;
@@ -44,6 +41,8 @@ public interface RotationContract {
 
         void showInfoCustomerAndListTotalBrand(CustomerModel customerModel, List<TotalRotationBrandModel> list, List<TotalChangeGiftModel> totalChangeGiftModels);
 
+        void showUploadRetry();
+
     }
 
     interface Presenter extends BasePresenter {
@@ -72,6 +71,8 @@ public interface RotationContract {
 
         //lấy ds quà đã đổi của customer
         List<CustomerGiftModel> getGiftByCustomer(int customerId);
+
+        void uploadData();
 
     }
 }

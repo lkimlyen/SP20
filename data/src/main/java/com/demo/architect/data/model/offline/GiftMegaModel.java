@@ -36,7 +36,7 @@ public class GiftMegaModel extends RealmObject {
         for (GiftMegaEntity giftMegaEntity : list) {
             TimeRotationModel timeRotationModel = new TimeRotationModel(giftMegaEntity.getId(), ConvertUtils.ConvertStringToShortDate(giftMegaEntity.getDateStart()),
                     ConvertUtils.ConvertStringToShortDate(giftMegaEntity.getDateEnd()));
-            timeRotationModel = realm.copyToRealm(timeRotationModel);
+            timeRotationModel = realm.copyToRealmOrUpdate(timeRotationModel);
             RealmList<GiftMegaModel> realmList = timeRotationModel.getGiftList();
             for (GiftMegaInTimeEntity item : giftMegaEntity.getListGift()) {
                 GiftMegaModel giftMegaModel = new GiftMegaModel(item.getId(), item.getGiftName(), item.getFilePath(), item.isGift());

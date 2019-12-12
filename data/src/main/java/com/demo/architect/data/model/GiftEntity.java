@@ -18,7 +18,6 @@ public class GiftEntity {
     @SerializedName("FilePath")
     @Expose
     private String filePath;
-
     public int getId() {
         return id;
     }
@@ -34,4 +33,5 @@ public class GiftEntity {
     public String getFilePath() {
         return filePath;
     }
+
 }

@@ -47,7 +47,7 @@ public class ProductModel extends RealmObject {
                 productEntity.getProductName(), path,
                 productEntity.getBrandID(), productEntity.isChangeGift(), productEntity.isPrice(),
                 productEntity.isStock(), productEntity.isTakeOffVolume(), productEntity.isGetInfo(), productEntity.getNumberOfEnough());
-        realm.copyToRealm(productModel);
+        realm.copyToRealmOrUpdate(productModel);
     }
 
     public int getId() {
@@ -100,13 +100,21 @@ public class ProductModel extends RealmObject {
         results.deleteAllFromRealm();
     }
 
-    public static List<ProductModel> getListProductByBrandId(Realm realm, List<Integer> idList) {
-        List<ProductModel> list = new ArrayList<>();
+    public static List<Object> getListProductByBrandId(Realm realm, List<Integer> idList) {
+        List<Object> list = new ArrayList<>();
+        List<ProductModel> productModelList = new ArrayList<>();
+        List<BrandModel> brandModelList = new ArrayList<>();
         for (Integer id : idList) {
             RealmResults<ProductModel> productModel = realm.where(ProductModel.class)
                     .equalTo("BrandID", id).equalTo("IsGetInfo",true).findAll();
-            list.addAll(realm.copyFromRealm(productModel));
+            productModelList.addAll(realm.copyFromRealm(productModel));
+            BrandModel brandModel = realm.where(BrandModel.class).equalTo("id", id).findFirst();
+            if (brandModel != null) {
+                brandModelList.add(realm.copyFromRealm(brandModel));
+            }
         }
+        list.add(productModelList);
+        list.add(brandModelList);
         return list;
     }
 }

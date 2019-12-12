@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.DownloadListener;
-import com.demo.architect.data.repository.base.local.LocalRepository;
 import com.demo.architect.data.helper.SharedPreferenceHelper;
 import com.demo.architect.data.model.BackgroundDialEntity;
 import com.demo.architect.data.model.GiftEntity;
@@ -19,6 +18,7 @@ import com.demo.architect.data.model.POSMEntity;
 import com.demo.architect.data.model.ProductEntity;
 import com.demo.architect.data.model.UserEntity;
 import com.demo.architect.data.model.offline.GiftMegaModel;
+import com.demo.architect.data.repository.base.local.LocalRepository;
 import com.demo.architect.domain.BaseUseCase;
 import com.demo.architect.domain.GetBackgroundUsecase;
 import com.demo.architect.domain.GetBrandSetDetailUsecase;
@@ -37,6 +37,7 @@ import com.demo.sp19.R;
 import com.demo.sp19.app.CoreApplication;
 import com.demo.sp19.manager.OutletBrandManager;
 import com.demo.sp19.manager.OutletDownloadManager;
+import com.demo.sp19.manager.ResetDataManager;
 import com.demo.sp19.manager.UserManager;
 
 import java.io.File;
@@ -101,6 +102,7 @@ public class DashboardPresenter implements DashboardContract.Presenter {
     public void start() {
         Log.d(TAG, TAG + ".start() called");
 
+
     }
 
     @Override
@@ -146,45 +148,51 @@ public class DashboardPresenter implements DashboardContract.Presenter {
 
     @Override
     public void downloadFromServer() {
-        PackageManager manager = CoreApplication.getInstance().getPackageManager();
-        PackageInfo info;
-        String version = "";
-        try {
-            info = manager.getPackageInfo(
-                    CoreApplication.getInstance().getPackageName(), 0);
-            version = info.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        final String sVersion = version;
-        UserEntity userEntity = UserManager.getInstance().getUser();
-        //tải version lên server sau khi cập nhật app
-        if (!SharedPreferenceHelper.getInstance(CoreApplication.getInstance()).getVersionAppProject().equals(sVersion)) {
-            view.showProgressBar();
-            getVersionUsecase.executeIO(new GetVersionUsecase.RequestValue(UserManager.getInstance().getUser().getOutlet().getOutletId(),
-                    version), new BaseUseCase.UseCaseCallback<GetVersionUsecase.ResponseValue, GetVersionUsecase.ErrorValue>() {
-                @Override
-                public void onSuccess(GetVersionUsecase.ResponseValue successResponse) {
-                    view.hideProgressBar();
-                    SharedPreferenceHelper.getInstance(CoreApplication.getInstance()).pushVersionAppProject(sVersion);
-                    if (OutletDownloadManager.getInstance().checkDownload(userEntity.getOutlet().getOutletId(), userEntity.getProjectId())) {
-                        getListProduct();
-                    }
-                }
-
-                @Override
-                public void onError(GetVersionUsecase.ErrorValue errorResponse) {
-                    view.hideProgressBar();
-                    if (OutletDownloadManager.getInstance().checkDownload(userEntity.getOutlet().getOutletId(), userEntity.getProjectId())) {
-                        getListProduct();
-                    }
-
-                }
-            });
+        int reset = ResetDataManager.getInstance().getResetData();
+        if (reset == 1) {
+            clearData();
         } else {
-            //check xem đã download dữ liệu về chưa
-            if (OutletDownloadManager.getInstance().checkDownload(userEntity.getOutlet().getOutletId(), userEntity.getProjectId())) {
-                getListProduct();
+            PackageManager manager = CoreApplication.getInstance().getPackageManager();
+            PackageInfo info;
+            String version = "";
+            try {
+                info = manager.getPackageInfo(
+                        CoreApplication.getInstance().getPackageName(), 0);
+                version = info.versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            final String sVersion = version;
+            UserEntity userEntity = UserManager.getInstance().getUser();
+
+            //tải version lên server sau khi cập nhật app
+            if (!SharedPreferenceHelper.getInstance(CoreApplication.getInstance()).getVersionAppProject().equals(sVersion)) {
+                view.showProgressBar();
+                getVersionUsecase.executeIO(new GetVersionUsecase.RequestValue(UserManager.getInstance().getUser().getOutlet().getOutletId(),
+                        version), new BaseUseCase.UseCaseCallback<GetVersionUsecase.ResponseValue, GetVersionUsecase.ErrorValue>() {
+                    @Override
+                    public void onSuccess(GetVersionUsecase.ResponseValue successResponse) {
+                        view.hideProgressBar();
+                        SharedPreferenceHelper.getInstance(CoreApplication.getInstance()).pushVersionAppProject(sVersion);
+                        if (OutletDownloadManager.getInstance().checkDownload(userEntity.getOutlet().getOutletId(), userEntity.getProjectId())) {
+                            getListProduct();
+                        }
+                    }
+
+                    @Override
+                    public void onError(GetVersionUsecase.ErrorValue errorResponse) {
+                        view.hideProgressBar();
+                        if (OutletDownloadManager.getInstance().checkDownload(userEntity.getOutlet().getOutletId(), userEntity.getProjectId())) {
+                            getListProduct();
+                        }
+
+                    }
+                });
+            } else {
+                //check xem đã download dữ liệu về chưa
+                if (OutletDownloadManager.getInstance().checkDownload(userEntity.getOutlet().getOutletId(), userEntity.getProjectId())) {
+                    getListProduct();
+                }
             }
         }
 
@@ -246,6 +254,16 @@ public class DashboardPresenter implements DashboardContract.Presenter {
                 break;
 
         }
+    }
+
+    @Override
+    public void clearData() {
+        localRepository.clearAllData().subscribe(new Action1<String>() {
+            @Override
+            public void call(String s) {
+                getListProduct();
+            }
+        });
     }
 
     private int positonProduct = 0;
@@ -778,6 +796,7 @@ public class DashboardPresenter implements DashboardContract.Presenter {
                                             UserManager.getInstance().getUser().getOutlet().getOutletId(),
                                             UserManager.getInstance().getUser().getProjectId());
                                     view.showSuccess(CoreApplication.getInstance().getString(R.string.text_download_success));
+                                    ResetDataManager.getInstance().setResetData(0);
                                 }
 
                             }
@@ -833,6 +852,7 @@ public class DashboardPresenter implements DashboardContract.Presenter {
                                                 UserManager.getInstance().getUser().getOutlet().getOutletId(),
                                                 UserManager.getInstance().getUser().getProjectId());
                                         view.showSuccess(CoreApplication.getInstance().getString(R.string.text_download_success));
+                                        ResetDataManager.getInstance().setResetData(0);
                                     }
 
                                 }
@@ -924,6 +944,8 @@ public class DashboardPresenter implements DashboardContract.Presenter {
                                             UserManager.getInstance().getUser().getOutlet().getOutletId(),
                                             UserManager.getInstance().getUser().getProjectId());
                                     view.showSuccess(CoreApplication.getInstance().getString(R.string.text_download_success));
+                                    ResetDataManager.getInstance().setResetData(0);
+                                   
                                 }
                             }
                         });

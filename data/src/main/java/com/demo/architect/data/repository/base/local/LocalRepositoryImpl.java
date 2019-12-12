@@ -495,12 +495,12 @@ public class LocalRepositoryImpl implements LocalRepository {
     }
 
     @Override
-    public Observable<List<ProductModel>> getListProductByBrandId(final List<Integer> idList) {
-        return Observable.create(new Observable.OnSubscribe<List<ProductModel>>() {
+    public Observable<List<Object>> getListProductByBrandId(final List<Integer> idList) {
+        return Observable.create(new Observable.OnSubscribe<List<Object>>() {
             @Override
-            public void call(Subscriber<? super List<ProductModel>> subscriber) {
+            public void call(Subscriber<? super List<Object>> subscriber) {
                 try {
-                    List<ProductModel> list = databaseRealm.getListProductByBrandId(idList);
+                    List<Object> list = databaseRealm.getListProductByBrandId(idList);
 
                     subscriber.onNext(list);
                     subscriber.onCompleted();
@@ -665,14 +665,14 @@ public class LocalRepositoryImpl implements LocalRepository {
     }
 
     @Override
-    public Observable<String> addCustomerGiftModel(final List<CustomerGiftModel> giftModelList, final int customerId) {
-        return Observable.create(new Observable.OnSubscribe<String>() {
+    public Observable<List<Integer>> addCustomerGiftModel(final List<CustomerGiftModel> giftModelList, final int customerId) {
+        return Observable.create(new Observable.OnSubscribe<List<Integer>>() {
             @Override
-            public void call(Subscriber<? super String> subscriber) {
+            public void call(Subscriber<? super List<Integer>> subscriber) {
                 try {
-                    databaseRealm.addCustomerGiftModel(giftModelList, customerId);
+                    List<Integer> list =  databaseRealm.addCustomerGiftModel(giftModelList, customerId);
 
-                    subscriber.onNext("Success");
+                    subscriber.onNext(list);
                     subscriber.onCompleted();
                 } catch (Exception e) {
                     subscriber.onError(e);
@@ -921,12 +921,12 @@ public class LocalRepositoryImpl implements LocalRepository {
     }
 
     @Override
-    public Observable<LinkedHashMap<CustomerModel, List<CustomerGiftModel>>> checkCustomerPhone(final String phone, final List<Integer> idListBrand) {
-        return Observable.create(new Observable.OnSubscribe<LinkedHashMap<CustomerModel, List<CustomerGiftModel>>>() {
+    public Observable<List<Object>> checkCustomerPhone(final String phone, final List<Integer> idListBrand) {
+        return Observable.create(new Observable.OnSubscribe<List<Object>>() {
             @Override
-            public void call(Subscriber<? super LinkedHashMap<CustomerModel, List<CustomerGiftModel>>> subscriber) {
+            public void call(Subscriber<? super List<Object>> subscriber) {
                 try {
-                    LinkedHashMap<CustomerModel, List<CustomerGiftModel>> list = databaseRealm.checkCustomerPhone(phone,idListBrand);
+                    List<Object> list = databaseRealm.checkCustomerPhone(phone,idListBrand);
 
                     subscriber.onNext(list);
                     subscriber.onCompleted();
@@ -1985,6 +1985,57 @@ public class LocalRepositoryImpl implements LocalRepository {
                     databaseRealm.updateStatusCustomer();
 
                     subscriber.onNext("");
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Observable<String> clearAllData() {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                try {
+                    databaseRealm.clearAllData();
+
+                    subscriber.onNext("");
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Observable<Integer> saveInfoChangeGift(final List<Object> list) {
+        return Observable.create(new Observable.OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> subscriber) {
+                try {
+                   int customerId = databaseRealm.saveInfoChangeGift(list);
+
+                    subscriber.onNext(customerId);
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Observable<List<Integer>> getInfoSendRequest() {
+        return Observable.create(new Observable.OnSubscribe<List<Integer>>() {
+            @Override
+            public void call(Subscriber<? super List<Integer>> subscriber) {
+                try {
+                    List<Integer> customerId = databaseRealm.getInfoSendRequest();
+
+                    subscriber.onNext(customerId);
                     subscriber.onCompleted();
                 } catch (Exception e) {
                     subscriber.onError(e);

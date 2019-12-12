@@ -1,7 +1,11 @@
 package com.demo.sp19.screen.dashboard;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -15,13 +19,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.androidnetworking.AndroidNetworking;
 import com.daimajia.numberprogressbar.NumberProgressBar;
+import com.demo.architect.data.helper.Constants;
 import com.demo.architect.data.helper.SharedPreferenceHelper;
 import com.demo.sp19.R;
 import com.demo.sp19.app.CoreApplication;
 import com.demo.sp19.app.base.BaseFragment;
+import com.demo.sp19.manager.ResetDataManager;
 import com.demo.sp19.screen.gift.GiftFragment;
 import com.demo.sp19.screen.gift.GiftModule;
 import com.demo.sp19.screen.gift.GiftPresenter;
@@ -38,13 +45,19 @@ import com.demo.sp19.screen.timekeeping.TimekeepingFragment;
 import com.demo.sp19.screen.timekeeping.TimekeepingModule;
 import com.demo.sp19.screen.timekeeping.TimekeepingPresenter;
 import com.demo.sp19.util.Precondition;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
+import com.google.android.play.core.tasks.Task;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
@@ -56,7 +69,7 @@ import static android.view.View.GONE;
 public class DashboardFragment extends BaseFragment implements DashboardContract.View {
     private final String TAG = DashboardFragment.class.getName();
     private DashboardContract.Presenter mPresenter;
-
+    private final int REQUEST_CODE_UPDATE_APP = 9876;
     public static boolean positionHomeFragment;
     private boolean isClick = true;
 
@@ -98,6 +111,7 @@ public class DashboardFragment extends BaseFragment implements DashboardContract
     GiftFragment giftFragment;
     private int progress;
     private CountDownTimer timer;
+    private BroadcastReceiver broadcastReceiver;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -125,6 +139,12 @@ public class DashboardFragment extends BaseFragment implements DashboardContract
         if (resultCode == RESULT_OK) {
             if (requestCode == 320) {
                 mPresenter.getListProduct();
+            }
+
+
+        } else {
+            if (requestCode == REQUEST_CODE_UPDATE_APP) {
+                showError(getString(R.string.text_update_app_fail));
             }
         }
 
@@ -157,6 +177,50 @@ public class DashboardFragment extends BaseFragment implements DashboardContract
             }
         };
         mPresenter.downloadFromServer();
+
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(Constants.ACTION_RESET_DATA)) {
+                    int reset = ResetDataManager.getInstance().getResetData();
+                    ResetDataManager.getInstance().resetData = 0;
+                    if (reset == 1) {
+                        mPresenter.clearData();
+                    }
+                }
+            }
+        };
+
+    }
+
+    private void checkUpdateGooglePlay() {
+        // Creates instance of the manager.
+        AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(getContext());
+
+// Returns an intent object that you use to check for an update.
+        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+
+// Checks that the platform will allow the specified type of update.
+        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    // For a flexible update, use AppUpdateType.FLEXIBLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                // Request the update.
+                try {
+                    appUpdateManager.startUpdateFlowForResult(
+                            // Pass the intent that is returned by 'getAppUpdateInfo()'.
+                            appUpdateInfo,
+                            // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
+                            AppUpdateType.IMMEDIATE,
+                            // The current activity making the update request.
+                            getActivity(),
+                            // Include a request code to later monitor this update request.
+                            REQUEST_CODE_UPDATE_APP);
+                } catch (IntentSender.SendIntentException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void configFragments() {
@@ -276,14 +340,23 @@ public class DashboardFragment extends BaseFragment implements DashboardContract
     @Override
     public void onResume() {
         super.onResume();
+        checkUpdateGooglePlay();
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(broadcastReceiver, new IntentFilter(Constants.ACTION_RESET_DATA));
         showNotificationWarning();
         mPresenter.start();
     }
 
     @Override
     public void onPause() {
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(broadcastReceiver);
         super.onPause();
         mPresenter.stop();
+    }
+
+    @Override
+    public void onDestroy() {
+
+        super.onDestroy();
     }
 
     @OnClick(R.id.iv_home)

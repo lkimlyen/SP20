@@ -36,6 +36,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.ParsedRequestListener;
+import com.demo.architect.data.helper.Constants;
 import com.demo.architect.data.helper.SharedPreferenceHelper;
 import com.demo.architect.data.model.BaseResponse;
 import com.demo.architect.data.model.PrizeEntity;
@@ -43,6 +44,8 @@ import com.demo.architect.data.model.UserEntity;
 import com.demo.sp19.R;
 import com.demo.sp19.app.CoreApplication;
 import com.demo.sp19.manager.MegaGiftManager;
+import com.demo.sp19.manager.ResetDataManager;
+import com.demo.sp19.manager.TokenManager;
 import com.demo.sp19.screen.dashboard.DashboardActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -140,6 +143,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 //xóa noti đổi quà
                 if (Integer.parseInt(data.get("TypeNotifi")) == 10) {
                     SharedPreferenceHelper.getInstance(getApplicationContext()).removeMegaGiftObject();
+                }
+
+                if (Integer.parseInt(data.get("TypeNotifi")) == 11) {
+                     Intent intent = new Intent();
+                    intent.setAction(Constants.ACTION_RESET_DATA);
+
+                    ResetDataManager.getInstance().setResetData(1);
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 }
 
                 //nhận noti gen list quay quà
@@ -295,5 +306,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //        }
 //
 //        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+    }
+
+    @Override
+    public void onNewToken(String s) {
+        super.onNewToken(s);
+        TokenManager.getInstance().setToken(s);
     }
 }

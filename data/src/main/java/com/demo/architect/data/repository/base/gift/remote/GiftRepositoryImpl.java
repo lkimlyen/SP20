@@ -7,9 +7,17 @@ import com.demo.architect.data.model.CurrentBrandSetEntity;
 import com.demo.architect.data.model.GiftMegaEntity;
 import com.demo.architect.data.model.ProductGiftEntity;
 
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 
 //import javax.inject.Singleton;
@@ -347,6 +355,21 @@ public class GiftRepositoryImpl implements GiftRepository {
             }
         });
 
+    }
+
+    @Override
+    public Observable<BaseResponse> sendRequestGift(final int spId, final List<Integer> bradnsetList) {
+        return Observable.create(new ObservableOnSubscribe<BaseResponse>() {
+            @Override
+            public void subscribe(ObservableEmitter<BaseResponse> emitter) throws Exception {
+                Map<String,Object> params = new HashMap<>();
+                params.put("SPID",spId);
+                params.put("BrandSetID",bradnsetList);
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), (new JSONObject(params)).toString());
+
+                handleBaseResponse(mRemoteApiInterface.sendRequestGift(body), emitter);
+            }
+        });
     }
 }
 

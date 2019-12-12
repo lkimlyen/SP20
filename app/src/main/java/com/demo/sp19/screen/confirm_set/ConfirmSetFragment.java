@@ -18,13 +18,13 @@ import com.demo.sp19.R;
 import com.demo.sp19.adapter.ConfirmSetAdapter;
 import com.demo.sp19.app.base.BaseFragment;
 import com.demo.sp19.util.Precondition;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by MSI on 26/11/2017.

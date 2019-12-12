@@ -18,4 +18,6 @@ public class Constants {
 
     //trạng thái chưa kết thúc
     public static final int NOT_FINISHED= 0;
+    public static final String RESET_DATA = "KEY_RESET_DATA";
+    public static final String ACTION_RESET_DATA = "ACTION_RESET_DATA";
 }

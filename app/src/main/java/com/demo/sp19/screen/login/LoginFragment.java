@@ -15,11 +15,11 @@ import com.demo.sp19.R;
 import com.demo.sp19.app.base.BaseFragment;
 import com.demo.sp19.screen.dashboard.DashboardActivity;
 import com.demo.sp19.util.Precondition;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by MSI on 26/11/2017.

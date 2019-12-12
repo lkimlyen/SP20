@@ -40,9 +40,23 @@ public class CustomerModel extends RealmObject implements Serializable {
     @Expose
     private String BillNumber;
 
-    @SerializedName("pAddress")
+    @SerializedName("pSex")
     @Expose
-    private String Address;
+    private String Sex;
+
+    @SerializedName("pEmail")
+    @Expose
+    private String Email;
+
+    @SerializedName("pYearOfBirth")
+    @Expose
+    private int YearOfBirth;
+
+
+    @SerializedName("pReasonBuy")
+    @Expose
+    private String ReasonBuy;
+
 
     @SerializedName("pNote")
     @Expose
@@ -65,19 +79,22 @@ public class CustomerModel extends RealmObject implements Serializable {
     public CustomerModel() {
     }
 
-    public CustomerModel(int outletID, String customerName, String customerCode, String customerPhone, String billNumber, String address, String note, int createdBy) {
+    public CustomerModel(int outletID, String customerName, String customerCode, String customerPhone, String billNumber, String sex, String email, int yearOfBirth, String reasonBuy, String note, int createdBy) {
         OutletID = outletID;
         CustomerName = customerName;
         CustomerCode = customerCode;
         CustomerPhone = customerPhone;
         BillNumber = billNumber;
-        Address = address;
+        Sex = sex;
+        Email = email;
+        YearOfBirth = yearOfBirth;
+        ReasonBuy = reasonBuy;
         Note = note;
         CreatedBy = createdBy;
     }
 
     public CustomerModel(int id, int outletID, String customerName, String customerCode, String customerPhone,
-                         String billNumber, String address, String note, int createdBy, boolean finished, boolean finishedSP,
+                         String billNumber, String sex, String email, int yearOfBirth, String reasonBuy, String note, int createdBy, boolean finished, boolean finishedSP,
                          Date dateCreate, String createdDateTime, int serverId, int status) {
         Id = id;
         OutletID = outletID;
@@ -85,7 +102,10 @@ public class CustomerModel extends RealmObject implements Serializable {
         CustomerCode = customerCode;
         CustomerPhone = customerPhone;
         BillNumber = billNumber;
-        Address = address;
+        Sex = sex;
+        Email = email;
+        YearOfBirth = yearOfBirth;
+        ReasonBuy = reasonBuy;
         Note = note;
         CreatedBy = createdBy;
         Finished = finished;
@@ -107,7 +127,7 @@ public class CustomerModel extends RealmObject implements Serializable {
     public static Integer addCustomer(Realm realm, CustomerModel customerModel) {
         CustomerModel customer = new CustomerModel(id(realm) + 1, customerModel.OutletID,
                 customerModel.CustomerName, customerModel.CustomerCode, customerModel.CustomerPhone,
-                customerModel.BillNumber, customerModel.Address, customerModel.Note, customerModel.CreatedBy,
+                customerModel.BillNumber, customerModel.Sex, customerModel.Email, customerModel.YearOfBirth, customerModel.ReasonBuy, customerModel.Note, customerModel.CreatedBy,
                 false, false, ConvertUtils.ConvertStringToShortDate(ConvertUtils.getDateTimeCurrentShort()), ConvertUtils.getDateTimeCurrent(), -1, Constants.WAITING_UPLOAD);
         int id = realm.copyToRealm(customer).getId();
         return id;
@@ -199,8 +219,28 @@ public class CustomerModel extends RealmObject implements Serializable {
         return BillNumber;
     }
 
-    public String getAddress() {
-        return Address;
+    public String getSex() {
+        return Sex;
+    }
+
+    public String getEmail() {
+        return Email;
+    }
+
+    public int getYearOfBirth() {
+        return YearOfBirth;
+    }
+
+    public String getReasonBuy() {
+        return ReasonBuy;
+    }
+
+    public Date getDateCreate() {
+        return DateCreate;
+    }
+
+    public int getStatus() {
+        return Status;
     }
 
     public String getNote() {
@@ -239,8 +279,24 @@ public class CustomerModel extends RealmObject implements Serializable {
         BillNumber = billNumber;
     }
 
-    public void setAddress(String address) {
-        Address = address;
+    public void setSex(String sex) {
+        Sex = sex;
+    }
+
+    public void setEmail(String email) {
+        Email = email;
+    }
+
+    public void setYearOfBirth(int yearOfBirth) {
+        YearOfBirth = yearOfBirth;
+    }
+
+    public void setReasonBuy(String reasonBuy) {
+        ReasonBuy = reasonBuy;
+    }
+
+    public void setDateCreate(Date dateCreate) {
+        DateCreate = dateCreate;
     }
 
     public void setNote(String note) {
@@ -323,8 +379,11 @@ public class CustomerModel extends RealmObject implements Serializable {
         return list;
     }
 
-    public static LinkedHashMap<CustomerModel, List<CustomerGiftModel>> checkCustomerPhone(Realm realm, String phone, List<Integer> idListBrand) {
+    public static List<Object> checkCustomerPhone(Realm realm, String phone, List<Integer> idListBrand) {
+
+        List<Object> objectList = new ArrayList<>();
         LinkedHashMap<CustomerModel, List<CustomerGiftModel>> list = new LinkedHashMap<>();
+        LinkedHashMap<BrandModel, Integer> brandModelIntegerLinkedHashMap = new LinkedHashMap<>();
         RealmResults<CustomerModel> results = realm.where(CustomerModel.class)
                 .equalTo("CustomerPhone", phone)
                 .equalTo("DateCreate", ConvertUtils.ConvertStringToShortDate(ConvertUtils.getDateTimeCurrentShort())).findAll();
@@ -333,20 +392,30 @@ public class CustomerModel extends RealmObject implements Serializable {
         for (CustomerModel customerModel : results) {
             List<CustomerGiftModel> giftModelList = new ArrayList<>();
             for (int brandId : idListBrand) {
-                BrandModel brandModel = realm.where(BrandModel.class).equalTo("id", brandId).equalTo("IsDialLucky", false).notEqualTo("NumberGiftOfDay",-1).findFirst();
+                BrandModel brandModel = realm.where(BrandModel.class).equalTo("id", brandId).equalTo("IsDialLucky", false).notEqualTo("NumberGiftOfDay", -1).findFirst();
                 if (brandModel != null) {
                     RealmResults<ProductModel> productModels = realm.where(ProductModel.class).equalTo("BrandID", brandId).findAll();
                     for (ProductModel productModel : productModels) {
+                        int countGift = 0;
+                        if (brandModelIntegerLinkedHashMap.get(brandModel) != null) {
+                            countGift = brandModelIntegerLinkedHashMap.get(brandModel);
+                        }
+                        RealmResults<ProductGiftModel> productGiftModels = realm.where(ProductGiftModel.class).equalTo("ProductID", productModel.getId()).findAll();
 
-                            RealmResults<ProductGiftModel> productGiftModels = realm.where(ProductGiftModel.class).equalTo("ProductID", productModel.getId()).findAll();
-
-                            for (ProductGiftModel productGiftModel : productGiftModels) {
-                                CustomerGiftModel customerGiftModel = realm.where(CustomerGiftModel.class)
-                                        .equalTo("CusId", customerModel.Id).equalTo("GiftID", productGiftModel.getGiftID()).findFirst();
-                                if (customerGiftModel != null) {
-                                    giftModelList.add(realm.copyFromRealm(customerGiftModel));
-                                }
+                        for (ProductGiftModel productGiftModel : productGiftModels) {
+                            CustomerGiftModel customerGiftModel = realm.where(CustomerGiftModel.class)
+                                    .equalTo("CusId", customerModel.Id).equalTo("GiftID", productGiftModel.getGiftID()).findFirst();
+                            if (customerGiftModel != null) {
+                                giftModelList.add(realm.copyFromRealm(customerGiftModel));
+                                countGift += customerGiftModel.getNumberGift();
                             }
+                        }
+
+
+                        if (countGift > 0) {
+                            brandModelIntegerLinkedHashMap.put(brandModel, countGift);
+                        }
+
 
                     }
                 }
@@ -355,20 +424,31 @@ public class CustomerModel extends RealmObject implements Serializable {
             for (CurrentBrandModel currentBrandModel : currentBrandModels) {
                 if (currentBrandModel.getBrandModel().getNumberGiftOfDay() != -1) {
                     RealmResults<BrandSetDetailModel> brandSetDetailModelRealmResults = realm.where(BrandSetDetailModel.class).equalTo("BrandSetID", currentBrandModel.getBrandSetID()).findAll();
-
+                    int countGift = 0;
+                    if (brandModelIntegerLinkedHashMap.get(currentBrandModel.getBrandModel()) != null) {
+                        countGift = brandModelIntegerLinkedHashMap.get(currentBrandModel.getBrandModel());
+                    }
                     for (BrandSetDetailModel brandSetDetailModel : brandSetDetailModelRealmResults) {
                         CustomerGiftModel customerGiftModel = realm.where(CustomerGiftModel.class)
                                 .equalTo("CusId", customerModel.Id).equalTo("GiftID", brandSetDetailModel.getGiftID()).findFirst();
                         if (customerGiftModel != null) {
                             giftModelList.add(realm.copyFromRealm(customerGiftModel));
+                            countGift += customerGiftModel.getNumberGift();
                         }
                     }
+                    if (countGift > 0) {
+                        brandModelIntegerLinkedHashMap.put(currentBrandModel.getBrandModel(), countGift);
+                    }
                 }
+
             }
             list.put(customerModel, giftModelList);
 
+
         }
-        return list;
+        objectList.add(list);
+        objectList.add(brandModelIntegerLinkedHashMap);
+        return objectList;
     }
 
     public static LinkedHashMap<BrandModel, Integer> getListNumberGiftWithBrand(Realm realm, String phone, List<Integer> idListBrand) {

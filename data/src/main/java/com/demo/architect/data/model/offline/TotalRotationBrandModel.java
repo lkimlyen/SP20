@@ -27,7 +27,10 @@ public class TotalRotationBrandModel extends RealmObject {
         BrandId = brandId;
         NumberTotal = numberTotal;
     }
-
+    public TotalRotationBrandModel( int brandId, int numberTotal) {
+        BrandId = brandId;
+        NumberTotal = numberTotal;
+    }
     public TotalRotationBrandModel(int id, int customerId, int brandId, int numberTotal, int numberTurned, boolean finished) {
         Id = id;
         CustomerId = customerId;
@@ -53,7 +56,14 @@ public class TotalRotationBrandModel extends RealmObject {
         }
 
     }
+    public static void create(Realm realm, List<TotalRotationBrandModel> list, int customerId) {
+        for (TotalRotationBrandModel item : list) {
+            TotalRotationBrandModel totalRotationBrandModel = new TotalRotationBrandModel(id(realm) + 1, customerId,
+                    item.getBrandId(), item.getNumberTotal(), 0, false);
+            realm.copyToRealm(totalRotationBrandModel);
+        }
 
+    }
     public int getId() {
         return Id;
     }

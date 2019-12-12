@@ -50,10 +50,12 @@ import com.demo.architect.data.model.offline.TimeRotationModel;
 import com.demo.architect.data.model.offline.TotalChangeGiftModel;
 import com.demo.architect.data.model.offline.TotalRotationBrandModel;
 import com.demo.architect.data.model.offline.TotalRotationModel;
+import com.demo.architect.utils.view.ConvertUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -80,11 +82,11 @@ public class DatabaseRealm {
     //khởi tạo database theo thông tin user
     public Realm getRealmInstance() {
         if (!RealmHelper.getInstance().getInitRealm()) {
-            String nameDatabase = "SP19_" + SharedPreferenceHelper.getInstance(context).getUserObject().getOutlet().getOutletId()
+            String nameDatabase = "sp19_" + SharedPreferenceHelper.getInstance(context).getUserObject().getOutlet().getOutletId()
                     + "_" + SharedPreferenceHelper.getInstance(context).getUserObject().getProjectId() + ".realm";
             RealmConfiguration realmConfigurationMain = new RealmConfiguration.Builder()
                     .name(nameDatabase)
-                    .schemaVersion(1)
+                    .schemaVersion(2)
                     .migration(new MyMigration())
                     .build();
             Realm.setDefaultConfiguration(realmConfigurationMain);
@@ -421,9 +423,9 @@ public class DatabaseRealm {
         });
     }
 
-    public List<ProductModel> getListProductByBrandId(List<Integer> idList) {
+    public List<Object> getListProductByBrandId(List<Integer> idList) {
         Realm realm = getRealmInstance();
-        List<ProductModel> list = ProductModel.getListProductByBrandId(realm, idList);
+        List<Object> list = ProductModel.getListProductByBrandId(realm, idList);
         return list;
     }
 
@@ -485,7 +487,7 @@ public class DatabaseRealm {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                CustomerProductModel.addCustomerProduct(realm, productModelList);
+                // CustomerProductModel.addCustomerProduct(realm, productModelList);
             }
         });
     }
@@ -500,14 +502,13 @@ public class DatabaseRealm {
         });
     }
 
-    public void addCustomerGiftModel(final List<CustomerGiftModel> giftModelList, final int customerId) {
+    public List<Integer> addCustomerGiftModel(final List<CustomerGiftModel> giftModelList, final int customerId) {
         Realm realm = getRealmInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                CustomerGiftModel.addCustomerGift(realm, giftModelList, customerId);
-            }
-        });
+        realm.beginTransaction();
+        List<Integer> list = CustomerGiftModel.addCustomerGift(realm, giftModelList, customerId);
+
+        realm.commitTransaction();
+        return list;
     }
 
     public LinkedHashMap<CustomerModel, List<ImageModel>> getListCustomerWaitingUpload(int OutletId) {
@@ -624,9 +625,9 @@ public class DatabaseRealm {
         return listLinkedHashMap;
     }
 
-    public LinkedHashMap<CustomerModel, List<CustomerGiftModel>> checkCustomerPhone(String phone, List<Integer> idListBrand) {
+    public List<Object> checkCustomerPhone(String phone, List<Integer> idListBrand) {
         Realm realm = getRealmInstance();
-        LinkedHashMap<CustomerModel, List<CustomerGiftModel>> listLinkedHashMap = CustomerModel.checkCustomerPhone(realm, phone,idListBrand);
+        List<Object> listLinkedHashMap = CustomerModel.checkCustomerPhone(realm, phone, idListBrand);
         return listLinkedHashMap;
     }
 
@@ -925,7 +926,7 @@ public class DatabaseRealm {
 
     public LinkedHashMap<BrandModel, Integer> getListNumberGiftWithBrand(String phone, List<Integer> idListBrand) {
         Realm realm = getRealmInstance();
-        LinkedHashMap<BrandModel, Integer> listBrandSetDetail = CustomerModel.getListNumberGiftWithBrand(realm, phone,idListBrand);
+        LinkedHashMap<BrandModel, Integer> listBrandSetDetail = CustomerModel.getListNumberGiftWithBrand(realm, phone, idListBrand);
         return listBrandSetDetail;
     }
 
@@ -1184,6 +1185,71 @@ public class DatabaseRealm {
         });
     }
 
+    public void clearAllData() {
+        Realm realm = getRealmInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.deleteAll();
+            }
+        });
+    }
+
+    public int saveInfoChangeGift(final List<Object> list) {
+        Realm realm = getRealmInstance();
+        realm.beginTransaction();
+        CustomerModel customerModel = (CustomerModel) list.get(0);
+        int customerId = CustomerModel.addCustomer(realm, customerModel);
+        CustomerProductModel.addCustomerProduct(realm, (List<CustomerProductModel>) list.get(1), customerId);
+        for (ImageModel imageModel : (List<ImageModel>) list.get(2)) {
+            ImageModel imageModel1 = new ImageModel(ImageModel.id(realm) + 1, ConvertUtils.getCodeGenerationByTime(),
+                    imageModel.getLatitude(), imageModel.getLongitude(), imageModel.getFileName(), ConvertUtils.getDateTimeCurrent(),
+                    imageModel.getPath(), imageModel.getImageType(), imageModel.getCreatedBy(), Constants.WAITING_UPLOAD);
+            int imageId = realm.copyToRealm(imageModel1).getId();
+            CustomerImageModel customerImageModel = new CustomerImageModel(CustomerImageModel.id(realm) + 1, customerId,
+                    customerModel.getOutletID(), imageId, imageModel.getCreatedBy(),
+                    ConvertUtils.getDateTimeCurrent(), Constants.WAITING_UPLOAD);
+            realm.copyToRealm(customerImageModel);
+
+        }
+
+        List<TotalChangeGiftModel> totalChangeGiftModelList = (List<TotalChangeGiftModel>) list.get(3);
+        if (totalChangeGiftModelList.size() > 0) {
+            TotalChangeGiftModel.create(realm, totalChangeGiftModelList, customerId);
+        }
+        List<TotalRotationBrandModel> rotationBrandModelList = (List<TotalRotationBrandModel>) list.get(4);
+        if (rotationBrandModelList.size() > 0) {
+            TotalRotationBrandModel.create(realm, rotationBrandModelList, customerId);
+        }
+        realm.commitTransaction();
+        return customerId;
+    }
+
+    public List<Integer> getInfoSendRequest() {
+        Realm realm = getRealmInstance();
+        List<Integer> objectList = new ArrayList<>();
+        RealmResults<BrandModel> brandModelRealmResults = realm.where(BrandModel.class).equalTo("IsDialLucky", true).findAll();
+        for (BrandModel brandModel : brandModelRealmResults) {
+            CurrentBrandModel currentBrandModel = realm.where(CurrentBrandModel.class).equalTo("BrandID", brandModel.getId()).findFirst();
+            if (currentBrandModel != null) {
+                RealmResults<BrandSetDetailModel> brandSetDetailModels = realm.where(BrandSetDetailModel.class).equalTo("BrandSetID", currentBrandModel.getBrandSetID()).findAll();
+
+                int totalGift = 0;
+                int totalRest = 0;
+                for (BrandSetDetailModel brandSetDetailModel : brandSetDetailModels) {
+                    CurrentGiftModel currentGiftModel = realm.where(CurrentGiftModel.class).equalTo("GiftID", brandSetDetailModel.getGiftID()).findFirst();
+                    totalGift = currentGiftModel.getNumberTotal() + totalGift;
+                    totalRest = currentGiftModel.getNumberRest() + totalRest;
+                }
+                if (totalRest * 100 / totalGift <= 30) {
+                    objectList.add(currentBrandModel.getBrandSetID());
+                }
+
+            }
+        }
+        return objectList;
+    }
+
     public class MyMigration implements RealmMigration {
         @Override
         public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
@@ -1201,6 +1267,15 @@ public class DatabaseRealm {
             //     private RealmList<Dog> dogs;
             //     // getters and setters left out for brevity
             // }
+
+            if (oldVersion == 1) {
+                schema.get("CustomerModel").addField("Sex", String.class)
+                        .addField("Email", String.class)
+                        .addField("YearOfBirth", int.class)
+                        .addField("ReasonBuy", String.class)
+                        .removeField("Address");
+                oldVersion++;
+            }
 
 
         }

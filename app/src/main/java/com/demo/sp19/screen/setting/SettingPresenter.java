@@ -76,7 +76,7 @@ public class SettingPresenter implements SettingContract.Presenter {
     public void backupData() {
         view.showProgressBar();
         UserEntity user = UserManager.getInstance().getUser();
-        File mDownloadDir = new File(Environment.getExternalStorageDirectory(), "/Data/" + "SP19_" + UserManager.getInstance().getUser().getOutlet().getOutletId()
+        File mDownloadDir = new File(Environment.getExternalStorageDirectory(), "/Data/" + "sp19_" + UserManager.getInstance().getUser().getOutlet().getOutletId()
                 + "_" + UserManager.getInstance().getUser().getProjectId() + ".realm");
         String dataPath = FileUtils.exportRealmFile(mDownloadDir.getPath());
         if (!dataPath.equals("")) {

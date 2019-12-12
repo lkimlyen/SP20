@@ -64,7 +64,7 @@ public class ProductGiftModel extends RealmObject {
         for (ProductGiftEntity productGiftEntity : list) {
             ProductGiftModel productGiftModel = new ProductGiftModel(productGiftEntity.getProductGiftID(),
                     productGiftEntity.getProductID(), productGiftEntity.getGiftID(), productGiftEntity.getNumber());
-            productGiftModel = realm.copyToRealm(productGiftModel);
+            productGiftModel = realm.copyToRealmOrUpdate(productGiftModel);
             GiftModel giftModel = realm.where(GiftModel.class).equalTo("Id",productGiftModel.GiftID).findFirst();
             productGiftModel.setGiftModel(giftModel);
         }

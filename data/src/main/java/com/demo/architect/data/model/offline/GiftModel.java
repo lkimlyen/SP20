@@ -17,7 +17,6 @@ public class GiftModel extends RealmObject {
     private String GiftCode;
     private String GiftName;
     private String FilePath;
-
     public GiftModel() {
     }
 
@@ -31,7 +30,7 @@ public class GiftModel extends RealmObject {
     public static void addGift(Realm realm, GiftEntity giftEntity, String path) {
         GiftModel giftModel = new GiftModel(giftEntity.getId(), giftEntity.getGiftCode(),
                 giftEntity.getGiftName(), path);
-        giftModel = realm.copyToRealm(giftModel);
+        giftModel = realm.copyToRealmOrUpdate(giftModel);
         RealmResults<CustomerGiftModel> results = realm.where(CustomerGiftModel.class).equalTo("GiftID", giftModel.getId()).findAll();
         for (CustomerGiftModel customerGiftModel : results) {
             customerGiftModel.setGiftModel(giftModel);
@@ -63,6 +62,7 @@ public class GiftModel extends RealmObject {
     public String getFilePath() {
         return FilePath;
     }
+
 
     public static List<GiftModel> getListGiftByBrandIdAndSetId(Realm realm, int outletId, int brandId) {
         List<GiftModel> list = new ArrayList<>();

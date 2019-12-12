@@ -55,6 +55,14 @@ public class SharedPreferenceHelper {
         return sharedPreferences.getString(key, def);
     }
 
+    public void pushInt(String key, int val) {
+        sharedPreferences.edit().putInt(key, val).apply();
+    }
+
+    public int getInt(String key, int def) {
+        return sharedPreferences.getInt(key, def);
+    }
+
     public void pushBoolean(String key, boolean bool) {
         sharedPreferences.edit().putBoolean(key, bool).apply();
     }
