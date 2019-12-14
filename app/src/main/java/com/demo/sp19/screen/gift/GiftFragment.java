@@ -51,6 +51,7 @@ import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -753,7 +754,6 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
             return;
         }
 
-
         for (Map.Entry<Integer, Integer> map : brandRotationList.entrySet()) {
             totalRotaion += map.getValue();
         }
@@ -764,6 +764,15 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
         if (totalRotaion == 0) {
             showError(getString(R.string.text_unqualified_change_gift));
             return;
+        }
+
+        if (!TextUtils.isEmpty(etYearOfBirth.getText().toString())){
+            int year = Integer.parseInt(etYearOfBirth.getText().toString());
+            int yearCurrent = Calendar.getInstance().get(Calendar.YEAR);
+            if (yearCurrent - year < 18){
+                showError("Tuổi dưới 18 , không hợp lệ");
+                return;
+            }
         }
         if (customerId == -1) {
             if (isClickDialog) {

@@ -44,6 +44,7 @@ import com.demo.architect.domain.LoginUsecase;
 import com.demo.architect.domain.LogoutUsecase;
 import com.demo.architect.domain.ReadedNotificationSetGiftMegaUsecase;
 import com.demo.architect.domain.SendRequestGiftUsecase;
+import com.demo.architect.domain.SendTopupCardUsecase;
 import com.demo.architect.domain.UpdateChangeSetUsecase;
 import com.demo.architect.domain.UpdateCurrentGiftUsecase;
 import com.demo.architect.domain.UpdateStockUsecase;
@@ -265,6 +266,9 @@ public class UseCaseModule {
     SendRequestGiftUsecase provideSendRequestGiftUsecase(GiftRepository remoteRepository) {
         return new SendRequestGiftUsecase(remoteRepository);
     }
-
+    @Provides
+    SendTopupCardUsecase provideSendTopupCardUsecase(OtherRepository remoteRepository) {
+        return new SendTopupCardUsecase(remoteRepository);
+    }
 }
 

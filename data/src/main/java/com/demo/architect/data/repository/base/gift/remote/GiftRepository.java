@@ -8,7 +8,7 @@ import com.demo.architect.data.model.CurrentBrandSetEntity;
 import com.demo.architect.data.model.GiftMegaEntity;
 import com.demo.architect.data.model.ProductGiftEntity;
 
-import java.util.List;
+import java.util.LinkedHashMap;
 
 import io.reactivex.Observable;
 
@@ -48,5 +48,5 @@ public interface GiftRepository {
 
     Observable<BaseResponse> addCustomerGiftMega(String appCode, String data);
     Observable<BaseResponse> readedNotificationSetGiftMega(String appCode, int outletId, int giftId, int teamOutletID);
-    Observable<BaseResponse> sendRequestGift(final int spId, final List<Integer> bradnsetList);
+    Observable<BaseResponse<ConfirmSetEntity>> sendRequestGift(final int spId, final LinkedHashMap<Integer, Integer> bradnsetList);
 }

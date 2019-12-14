@@ -18,6 +18,10 @@ public class GiftEntity {
     @SerializedName("FilePath")
     @Expose
     private String filePath;
+
+    @SerializedName("IsTopupCard")
+    @Expose
+    private boolean isTopupCard;
     public int getId() {
         return id;
     }
@@ -34,4 +38,7 @@ public class GiftEntity {
         return filePath;
     }
 
+    public boolean isTopupCard() {
+        return isTopupCard;
+    }
 }

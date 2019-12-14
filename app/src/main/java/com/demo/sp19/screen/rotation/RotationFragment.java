@@ -41,6 +41,7 @@ import com.demo.sp19.app.base.BaseFragment;
 import com.demo.sp19.constants.Constants;
 import com.demo.sp19.dialogs.ConfirmGiftDialog;
 import com.demo.sp19.dialogs.GiftDialog;
+import com.demo.sp19.dialogs.TopupCardDialog;
 import com.demo.sp19.manager.CurrentBrandSetManager;
 import com.demo.sp19.manager.CurrentGiftManager;
 import com.demo.sp19.screen.rotation_mega.RotationMegaActivity;
@@ -114,7 +115,7 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
     @BindView(R.id.tv_title)
     TextView tvTitle;
     private int countClick;
-
+    private boolean isTopupCard = false;
     private LinkedHashMap<GiftModel, Integer> giftRotationList = new LinkedHashMap<>();
 
     //key: giftId, value: so luong
@@ -127,7 +128,7 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
     private boolean isRotation = false;
     int goccuoi = 0;
     private List<GiftModel> mGiftList = new ArrayList<>();
-
+    TopupCardDialog dialog;
     //key: brandId, value: co hoan thanh set hay khong
     private LinkedHashMap<Integer, Boolean> brandChangeSetList = new LinkedHashMap<>();
 
@@ -159,6 +160,7 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
         ButterKnife.bind(this, view);
         customerId = getActivity().getIntent().getIntExtra(Constants.CUSTOMER_ID, 0);
         initView();
+        dialog = new TopupCardDialog();
         return view;
     }
 
@@ -307,6 +309,8 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
             TextView tvName = v.findViewById(R.id.tv_name);
             EditText etNumber = v.findViewById(R.id.et_number);
             etNumber.setTag(giftModel);
+            if (giftModel.getGiftModel().isTopupCard())
+                isTopupCard = true;
             tvName.setText(giftModel.getGiftModel().getGiftName());
             editTextList.add(etNumber);
             ImageView ivGift = v.findViewById(R.id.iv_gift);
@@ -437,28 +441,23 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
     }
 
     @Override
-    public void showUploadRetry() {
-        new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE)
-                .setTitleText(getString(R.string.text_sweet_dialog_title))
-                .setContentText("Send yêu cầu quà thất bại bạn có muốn thử lại không")
-                .setConfirmText(getString(R.string.text_ok))
-                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-                        sweetAlertDialog.dismiss();
-                        mPresenter.uploadData();
-                    }
-                }) .setCancelText(getString(R.string.text_no))
-                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-                        sweetAlertDialog.dismiss();
-                        showSuccess("Gửi yêu cầu thất bại");
-                    }
-                })
-                .show();
+    public void showDialogTopUp() {
+
+        dialog.show(getActivity().getFragmentManager(), TAG);
+        dialog.setPhone(tvCustomerPhone.getText().toString());
+        dialog.setConfirmListener(new TopupCardDialog.OnConfirmListener() {
+            @Override
+            public void onConfirm(String phone, String type) {
+                mPresenter.sendTopupCard(phone, type);
+            }
+        });
     }
 
+    @Override
+    public void sendTopupSuccessfully() {
+        dialog.dismiss();
+        showSuccess("Gửi thành công");
+    }
 
     private void startAnimation() {
         int qua = (int) (Math.random() * listGiftRotation.size());
@@ -580,11 +579,11 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
                 @Override
                 public void onConfirm() {
                     if (brandChangeSetList.size() > 0) {
-                        mPresenter.confirmChangeSet(customerId, brandChangeSetList, giftProductChangeList);
+                        mPresenter.confirmChangeSet(customerId, brandChangeSetList, giftProductChangeList, isTopupCard);
                     } else if (giftProductChangeList.size() > 0) {
-                        mPresenter.saveGift(customerId, giftProductChangeList);
+                        mPresenter.saveGift(customerId, giftProductChangeList, isTopupCard);
                     } else {
-                        mPresenter.goToMega(customerId);
+                        mPresenter.goToMega(customerId, isTopupCard);
                     }
                 }
 

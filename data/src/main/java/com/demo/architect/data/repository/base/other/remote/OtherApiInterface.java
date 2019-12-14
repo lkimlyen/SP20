@@ -73,4 +73,13 @@ public interface OtherApiInterface {
     Call<BaseResponse> getVersion(@Field("pAppCode") String appCode,
                                   @Field("pOutletID") int outletId,
                                   @Field("pVersion") String version);
+
+    @FormUrlEncoded
+    @POST("https://sp20.imark.com.vn/WS/api/TopupCard")
+    Call<BaseResponse> sendTopupCard(@Field("phoneNumber") String phone,
+                                  @Field("phoneType") String phoneType,
+                                  @Field("outletId") int outletId,
+                          @Field("userId") int userId,
+                          @Field("userType") String userType,
+                          @Field("secretKey") String secretKey);
 }

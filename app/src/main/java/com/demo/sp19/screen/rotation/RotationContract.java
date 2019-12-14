@@ -41,8 +41,9 @@ public interface RotationContract {
 
         void showInfoCustomerAndListTotalBrand(CustomerModel customerModel, List<TotalRotationBrandModel> list, List<TotalChangeGiftModel> totalChangeGiftModels);
 
-        void showUploadRetry();
+        void showDialogTopUp();
 
+        void sendTopupSuccessfully();
     }
 
     interface Presenter extends BasePresenter {
@@ -62,17 +63,18 @@ public interface RotationContract {
         void updateNumberTurnAndSaveGift(int customerId, int id, int giftId, int number, List<CurrentGift> currentGiftList, CurrentBrandModel currentBrandModel, boolean finish);
 
         //lưu thông tin quà đã nhận được của khách hàng
-        void saveGift(int customerId, LinkedHashMap<GiftModel, Integer> listChooseGift);
+        void saveGift(int customerId, LinkedHashMap<GiftModel, Integer> listChooseGift, boolean isTopupCard);
 
-        void confirmChangeSet(int customerId, LinkedHashMap<Integer, Boolean> changeBrandSetList, LinkedHashMap<GiftModel, Integer> listGift);
+        void confirmChangeSet(int customerId, LinkedHashMap<Integer, Boolean> changeBrandSetList, LinkedHashMap<GiftModel, Integer> listGift, boolean isTopupCard);
 
         //check điều kiện chuyển đến vòng quay mega
-        void goToMega(int customerId);
+        void goToMega(int customerId, boolean isTopupCard);
 
         //lấy ds quà đã đổi của customer
         List<CustomerGiftModel> getGiftByCustomer(int customerId);
 
-        void uploadData();
+        void sendTopupCard(String phone, String type);
+
 
     }
 }

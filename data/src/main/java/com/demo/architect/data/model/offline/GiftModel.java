@@ -17,19 +17,21 @@ public class GiftModel extends RealmObject {
     private String GiftCode;
     private String GiftName;
     private String FilePath;
+    private boolean IsTopupCard;
     public GiftModel() {
     }
 
-    public GiftModel(int id, String giftCode, String giftName, String filePath) {
+    public GiftModel(int id, String giftCode, String giftName, String filePath, boolean isTopupCard) {
         Id = id;
         GiftCode = giftCode;
         GiftName = giftName;
         FilePath = filePath;
+        IsTopupCard = isTopupCard;
     }
 
     public static void addGift(Realm realm, GiftEntity giftEntity, String path) {
         GiftModel giftModel = new GiftModel(giftEntity.getId(), giftEntity.getGiftCode(),
-                giftEntity.getGiftName(), path);
+                giftEntity.getGiftName(), path, giftEntity.isTopupCard());
         giftModel = realm.copyToRealmOrUpdate(giftModel);
         RealmResults<CustomerGiftModel> results = realm.where(CustomerGiftModel.class).equalTo("GiftID", giftModel.getId()).findAll();
         for (CustomerGiftModel customerGiftModel : results) {
@@ -63,6 +65,9 @@ public class GiftModel extends RealmObject {
         return FilePath;
     }
 
+    public boolean isTopupCard() {
+        return IsTopupCard;
+    }
 
     public static List<GiftModel> getListGiftByBrandIdAndSetId(Realm realm, int outletId, int brandId) {
         List<GiftModel> list = new ArrayList<>();

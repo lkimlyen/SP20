@@ -86,7 +86,7 @@ public class DatabaseRealm {
                     + "_" + SharedPreferenceHelper.getInstance(context).getUserObject().getProjectId() + ".realm";
             RealmConfiguration realmConfigurationMain = new RealmConfiguration.Builder()
                     .name(nameDatabase)
-                    .schemaVersion(2)
+                    .schemaVersion(3)
                     .migration(new MyMigration())
                     .build();
             Realm.setDefaultConfiguration(realmConfigurationMain);
@@ -1274,6 +1274,11 @@ public class DatabaseRealm {
                         .addField("YearOfBirth", int.class)
                         .addField("ReasonBuy", String.class)
                         .removeField("Address");
+                oldVersion++;
+            }
+
+            if (oldVersion == 2) {
+                schema.get("GiftModel").addField("IsTopupCard", boolean.class);
                 oldVersion++;
             }
 

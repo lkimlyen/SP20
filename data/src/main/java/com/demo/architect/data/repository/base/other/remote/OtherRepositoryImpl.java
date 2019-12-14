@@ -287,6 +287,16 @@ public class OtherRepositoryImpl implements OtherRepository {
             }
         });
     }
+
+    @Override
+    public Observable<BaseResponse> sendTopupCard(final String phone, final String phoneType, final int outletId, final int userId, final String userType, final String secretKey) {
+        return Observable.create(new ObservableOnSubscribe<BaseResponse>() {
+            @Override
+            public void subscribe(ObservableEmitter<BaseResponse> emitter) throws Exception {
+                handleBaseResponse(mRemoteApiInterface.sendTopupCard(phone,phoneType,outletId,userId,userType,secretKey), emitter);
+            }
+        });
+    }
 }
 
 

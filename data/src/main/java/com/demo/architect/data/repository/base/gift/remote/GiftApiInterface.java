@@ -108,6 +108,8 @@ public interface GiftApiInterface {
 
 
     @POST("https://apikdt.imark.com.vn/v1/requests/create")
-    Call<BaseResponse> sendRequestGift(@Body RequestBody requestBody);
+    Call<BaseResponse<ConfirmSetEntity>> sendRequestGift(
+            @Query("token") long token,
+            @Body RequestBody requestBody);
 
 }

@@ -3,15 +3,16 @@ package com.demo.architect.domain;
 import android.util.Log;
 
 import com.demo.architect.data.model.BaseResponse;
+import com.demo.architect.data.model.ConfirmSetEntity;
 import com.demo.architect.data.repository.base.gift.remote.GiftRepository;
 
-import java.util.List;
+import java.util.LinkedHashMap;
 
 import io.reactivex.Observable;
 import io.reactivex.observers.DisposableObserver;
 
 
-public class SendRequestGiftUsecase extends BaseUseCase<BaseResponse> {
+public class SendRequestGiftUsecase extends BaseUseCase<BaseResponse<ConfirmSetEntity>> {
     private static final String TAG = SendRequestGiftUsecase.class.getSimpleName();
     private final GiftRepository remoteRepository;
 
@@ -20,23 +21,23 @@ public class SendRequestGiftUsecase extends BaseUseCase<BaseResponse> {
     }
 
     @Override
-    protected Observable<BaseResponse> buildUseCaseObservable() {
+    protected Observable<BaseResponse<ConfirmSetEntity>> buildUseCaseObservable() {
        int spId = ((RequestValue)requestValues).spId;
-        List<Integer> brandSetId = ((RequestValue)requestValues).bransetId;
+        LinkedHashMap<Integer, Integer> brandSetId = ((RequestValue)requestValues).bransetId;
         return remoteRepository.sendRequestGift(spId, brandSetId);
     }
 
 
     @Override
-    protected DisposableObserver<BaseResponse> buildUseCaseSubscriber() {
-        return new DefaultObserver<BaseResponse>() {
+    protected DisposableObserver<BaseResponse<ConfirmSetEntity>> buildUseCaseSubscriber() {
+        return new DefaultObserver<BaseResponse<ConfirmSetEntity>>() {
             @Override
-            public void onNext(BaseResponse data) {
+            public void onNext(BaseResponse<ConfirmSetEntity> data) {
                 Log.d(TAG, "onNext: " + String.valueOf(data));
                 if (useCaseCallback != null) {
 
                     if (data.getStatus() == 1) {
-                        useCaseCallback.onSuccess(new ResponseValue(data.getDescription()));
+                        useCaseCallback.onSuccess(new ResponseValue(data.getData()));
                     } else {
                         useCaseCallback.onError(new ErrorValue(data.getDescription()));
                     }
@@ -61,24 +62,24 @@ public class SendRequestGiftUsecase extends BaseUseCase<BaseResponse> {
 
     public static final class RequestValue implements RequestValues {
       private final int spId;
-      private final List<Integer> bransetId;
+      private final LinkedHashMap<Integer, Integer> bransetId;
 
 
-        public RequestValue(int spId, List<Integer> bransetId) {
+        public RequestValue(int spId, LinkedHashMap<Integer, Integer> bransetId) {
             this.spId = spId;
             this.bransetId = bransetId;
         }
     }
 
     public static final class ResponseValue implements ResponseValues {
-        private String description;
+        private ConfirmSetEntity confirmSetEntity;
 
-        public ResponseValue(String description) {
-            this.description = description;
+        public ResponseValue(ConfirmSetEntity confirmSetEntity) {
+            this.confirmSetEntity = confirmSetEntity;
         }
 
-        public String getDescription() {
-            return description;
+        public ConfirmSetEntity getDescription() {
+            return confirmSetEntity;
         }
     }
 

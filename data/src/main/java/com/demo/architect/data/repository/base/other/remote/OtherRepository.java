@@ -28,5 +28,6 @@ public interface OtherRepository {
     Observable<BaseListResponse<POSMEntity>> getPOSM(int outletId);
     Observable<BaseResponse> addPOSM(String appCode, String data);
     Observable<BaseResponse> getVersion(String appCode, int outletId, String version);
+    Observable<BaseResponse> sendTopupCard(String phone, String phoneType, int outletId, int userId, String userType, String secretKey );
 
 }

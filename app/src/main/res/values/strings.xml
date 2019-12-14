@@ -187,6 +187,7 @@
     <string name="text_customer_email">Email:</string>
     <string name="text_customer_year_of_birthday">Năm sinh</string>
     <string name="text_reason_buy">Lý do mua bia:</string>
+    <string name="text_err_connect_internet">Không có kết nối internet</string>
     <string-array name="reason_buy">
         <item>Mua để uống</item>
         <item>Mua để tặng</item>

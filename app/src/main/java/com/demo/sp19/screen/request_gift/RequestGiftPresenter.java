@@ -1,7 +1,8 @@
 package com.demo.sp19.screen.request_gift;
 
-import androidx.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.demo.architect.data.helper.Constants;
 import com.demo.architect.data.model.UserEntity;
@@ -12,6 +13,7 @@ import com.demo.architect.data.model.offline.RequestGiftModel;
 import com.demo.architect.data.repository.base.local.LocalRepository;
 import com.demo.architect.domain.AddWarehouseRequirementSetUsecase;
 import com.demo.architect.domain.BaseUseCase;
+import com.demo.architect.domain.SendRequestGiftUsecase;
 import com.demo.architect.utils.view.ConvertUtils;
 import com.demo.sp19.R;
 import com.demo.sp19.app.CoreApplication;
@@ -38,13 +40,15 @@ public class RequestGiftPresenter implements RequestGiftContract.Presenter {
     private final String TAG = RequestGiftPresenter.class.getName();
     private final RequestGiftContract.View view;
     private final AddWarehouseRequirementSetUsecase addWarehouseRequirementSetUsecase;
+    private final SendRequestGiftUsecase sendRequestGiftUsecase;
     @Inject
     LocalRepository localRepository;
 
     @Inject
-    RequestGiftPresenter(@NonNull RequestGiftContract.View view, AddWarehouseRequirementSetUsecase addWarehouseRequirementSetUsecase) {
+    RequestGiftPresenter(@NonNull RequestGiftContract.View view, AddWarehouseRequirementSetUsecase addWarehouseRequirementSetUsecase, SendRequestGiftUsecase sendRequestGiftUsecase) {
         this.view = view;
         this.addWarehouseRequirementSetUsecase = addWarehouseRequirementSetUsecase;
+        this.sendRequestGiftUsecase = sendRequestGiftUsecase;
     }
 
     @Inject
@@ -91,13 +95,13 @@ public class RequestGiftPresenter implements RequestGiftContract.Presenter {
         Gson gson = builder.create();
         String json = gson.toJson(list);
         view.showProgressBar();
-        addWarehouseRequirementSetUsecase.executeIO(new AddWarehouseRequirementSetUsecase.RequestValue(json),
-                new BaseUseCase.UseCaseCallback<AddWarehouseRequirementSetUsecase.ResponseValue,
-                        AddWarehouseRequirementSetUsecase.ErrorValue>() {
+        sendRequestGiftUsecase.executeIO(new SendRequestGiftUsecase.RequestValue(UserManager.getInstance().getUser().getUserId(), linkedHashMap),
+                new BaseUseCase.UseCaseCallback<SendRequestGiftUsecase.ResponseValue,
+                        SendRequestGiftUsecase.ErrorValue>() {
                     @Override
-                    public void onSuccess(AddWarehouseRequirementSetUsecase.ResponseValue successResponse) {
+                    public void onSuccess(SendRequestGiftUsecase.ResponseValue successResponse) {
                         view.hideProgressBar();
-                        RequestGiftModel requestGiftModel = new RequestGiftModel(successResponse.getId(),
+                        RequestGiftModel requestGiftModel = new RequestGiftModel(successResponse.getDescription().getId(),
                                 code,user.getOutlet().getOutletId(),user.getTeamOutletId(),dateRequest, Constants.UNCONFIRMED);
                         localRepository.saveRequestGift(requestGiftModel,list).subscribe(new Action1<String>() {
                             @Override
@@ -105,11 +109,10 @@ public class RequestGiftPresenter implements RequestGiftContract.Presenter {
                                 view.showSuccess(CoreApplication.getInstance().getString(R.string.text_send_request_success));
                             }
                         });
-
                     }
 
                     @Override
-                    public void onError(AddWarehouseRequirementSetUsecase.ErrorValue errorResponse) {
+                    public void onError(SendRequestGiftUsecase.ErrorValue errorResponse) {
                         if (errorResponse.getDescription().contains(CoreApplication.getInstance().getString(R.string.text_no_address_associated))) {
                             view.showError(CoreApplication.getInstance().getString(R.string.text_no_internet_connection));
                         } else {

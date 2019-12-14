@@ -6,11 +6,12 @@ import com.demo.architect.data.model.ConfirmSetEntity;
 import com.demo.architect.data.model.CurrentBrandSetEntity;
 import com.demo.architect.data.model.GiftMegaEntity;
 import com.demo.architect.data.model.ProductGiftEntity;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -83,7 +84,29 @@ public class GiftRepositoryImpl implements GiftRepository {
 
         }
     }
+    private void handleConfirmSetResponse(Call<BaseResponse<ConfirmSetEntity>> call, ObservableEmitter<BaseResponse<ConfirmSetEntity>> emitter) {
+        try {
+            BaseResponse<ConfirmSetEntity> response = call.execute().body();
 
+            if (!emitter.isDisposed()) {
+                if (response != null) {
+                    emitter.onNext(response);
+                } else {
+                    emitter.onError(new Exception("Network Error!"));
+                }
+                emitter.onComplete();
+            }
+
+
+        } catch (Exception e) {
+            if (!emitter.isDisposed()) {
+                emitter.onError(e);
+                emitter.onComplete();
+            }
+
+
+        }
+    }
     private void handleCurrentBrandSetResponse(Call<BaseListResponse<CurrentBrandSetEntity>> call, ObservableEmitter<BaseListResponse<CurrentBrandSetEntity>> emitter) {
         try {
             BaseListResponse<CurrentBrandSetEntity> response = call.execute().body();
@@ -358,16 +381,16 @@ public class GiftRepositoryImpl implements GiftRepository {
     }
 
     @Override
-    public Observable<BaseResponse> sendRequestGift(final int spId, final List<Integer> bradnsetList) {
-        return Observable.create(new ObservableOnSubscribe<BaseResponse>() {
+    public Observable<BaseResponse<ConfirmSetEntity>> sendRequestGift(final int spId, final LinkedHashMap<Integer, Integer> bradnsetList) {
+        return Observable.create(new ObservableOnSubscribe<BaseResponse<ConfirmSetEntity>>() {
             @Override
-            public void subscribe(ObservableEmitter<BaseResponse> emitter) throws Exception {
-                Map<String,Object> params = new HashMap<>();
-                params.put("SPID",spId);
-                params.put("BrandSetID",bradnsetList);
+            public void subscribe(ObservableEmitter<BaseResponse<ConfirmSetEntity>> emitter) throws Exception {
+                Map<String, Object> params = new HashMap<>();
+                params.put("SPID", spId);
+                params.put("BrandSets", new Gson().toJson(bradnsetList));
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), (new JSONObject(params)).toString());
-
-                handleBaseResponse(mRemoteApiInterface.sendRequestGift(body), emitter);
+                long queryToken = System.currentTimeMillis()/1000;
+                handleConfirmSetResponse(mRemoteApiInterface.sendRequestGift(queryToken,body), emitter);
             }
         });
     }
