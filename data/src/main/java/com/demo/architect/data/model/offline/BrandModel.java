@@ -20,7 +20,8 @@ public class BrandModel extends RealmObject {
     private String BrandName;
 
     private boolean IsDialLucky;
-
+    private boolean IsRequest;
+    private boolean IsTopupCard;
     private int MaximumChangeGift;
     private int NumberOfEnough;
     private int NumberGiftOfDay;
@@ -31,14 +32,16 @@ public class BrandModel extends RealmObject {
     public BrandModel() {
     }
 
-    public BrandModel(int id, String brandCode, String brandName, boolean isDialLucky, int maximumChangeGift, int numberOfEnough, int numberGiftOfDay) {
+    public BrandModel(int id, String brandCode, String brandName, boolean isDialLucky, boolean isRequest, int maximumChangeGift, int numberOfEnough, int numberGiftOfDay, boolean isTopupCard) {
         this.id = id;
         BrandCode = brandCode;
         BrandName = brandName;
         IsDialLucky = isDialLucky;
+        IsRequest = isRequest;
         MaximumChangeGift = maximumChangeGift;
         NumberOfEnough = numberOfEnough;
         NumberGiftOfDay = numberGiftOfDay;
+        IsTopupCard = isTopupCard;
     }
 
     public static void addBrand(Realm realm, List<BrandEntitiy> list) {
@@ -46,7 +49,7 @@ public class BrandModel extends RealmObject {
         results.deleteAllFromRealm();
         for (BrandEntitiy item : list) {
             BrandModel brandModel = new BrandModel(item.getId(), item.getBrandCode(),
-                    item.getBrandName(), item.isDialLucky(), item.getMaximumChangeGift(), item.getNumberOfEnough(), item.getNumberGiftOfDay());
+                    item.getBrandName(), item.isDialLucky(), item.isRequest(), item.getMaximumChangeGift(), item.getNumberOfEnough(), item.getNumberGiftOfDay(), item.isTopupCard());
             brandModel = realm.copyToRealmOrUpdate(brandModel);
 
             RealmList<ProductModel> realmList = brandModel.getProductList();
@@ -102,5 +105,13 @@ public class BrandModel extends RealmObject {
     public static BrandModel getBrandCurrent(Realm realm, int brandId) {
         BrandModel brandModel = realm.where(BrandModel.class).equalTo("id", brandId).findFirst();
         return brandModel;
+    }
+
+    public boolean isTopupCard() {
+        return IsTopupCard;
+    }
+
+    public boolean isRequest() {
+        return IsRequest;
     }
 }

@@ -81,7 +81,6 @@ public class CoreApplication extends MultiDexApplication implements Application.
     private void initializeFirebase() {
 
         String token = FirebaseInstanceId.getInstance().getToken();
-
         TokenManager.getInstance().setToken(token);
         Log.d(TAG, "Core FCM Token: " + token);
     }

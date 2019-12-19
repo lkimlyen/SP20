@@ -1,10 +1,7 @@
 package com.demo.sp19.screen.request_gift;
 
 
-import com.demo.architect.data.model.offline.BrandModel;
 import com.demo.architect.data.model.offline.BrandSetDetailModel;
-import com.demo.architect.data.model.offline.CurrentBrandModel;
-import com.demo.architect.data.model.offline.CustomerGiftModel;
 import com.demo.sp19.app.base.BasePresenter;
 import com.demo.sp19.app.base.BaseView;
 
@@ -17,7 +14,7 @@ import java.util.List;
 
 public interface RequestGiftContract {
     interface View extends BaseView<Presenter> {
-        void showListBrandSetDetailCurrent(LinkedHashMap<CurrentBrandModel, List<BrandSetDetailModel>> list);
+        void showListBrandSetDetailCurrent(LinkedHashMap<Object, List<BrandSetDetailModel>> list);
     }
 
     interface Presenter extends BasePresenter {

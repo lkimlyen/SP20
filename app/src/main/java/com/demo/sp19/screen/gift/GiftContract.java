@@ -55,7 +55,8 @@ public interface GiftContract {
         void saveInfoCustomer(String orderCode, String cusCode, String cusName, String phone, String sex, String email, int yearOfBirth, String reasonBuy,
                               String note, List<String> imagePath, LinkedHashMap<ProductModel, Integer> numberProductList,
                               LinkedHashMap<Integer, Integer> brandList,
-                              LinkedHashMap<ProductModel, Integer> productChooseNumberList, int totalRotaion);
+                              LinkedHashMap<ProductModel, Integer> productChooseNumberList,
+                              LinkedHashMap<Integer, Integer> topupChangeList);
 
         //lấy thông tin của khách hàng bị quay mà app bị lỗi
         void getInfoCusCrash(String orderCode, String phone, int customerId);

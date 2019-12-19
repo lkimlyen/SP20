@@ -134,6 +134,9 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
     ImageView ivReasonBuy;
     private int customerId = -1;
     private LinkedHashMap<Integer, Integer> brandRotationList = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, Integer> topupChangeList = new LinkedHashMap<>();
+
+    private LinkedHashMap<BrandModel, Integer> brandCodeList = new LinkedHashMap<>();
     private LinkedHashMap<ProductModel, Integer> productChooseNumberList = new LinkedHashMap<>();
     private LinkedHashMap<Integer, Integer> productNotChangeList = new LinkedHashMap<>();
     private LinkedHashMap<ProductModel, Integer> allNumberProductList = new LinkedHashMap<>();
@@ -462,6 +465,16 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
             ivCustomerCode.setVisibility(View.INVISIBLE);
             String content = "";
             for (Map.Entry<BrandModel, Integer> map : brandModelIntegerLinkedHashMap.entrySet()) {
+
+                for (Map.Entry<BrandModel, Integer> map2 : brandModelIntegerLinkedHashMap.entrySet()) {
+                    if (!map.getKey().equals(map2.getKey()) && map.getKey().getBrandCode().equals(map2.getKey().getBrandCode())) {
+                        int numberChange = map.getValue() + map2.getValue();
+                        if (numberChange >= map.getKey().getNumberGiftOfDay()) {
+                            ivCustomerPhone.setImageResource(R.drawable.ic_warning_red);
+                        }
+                        break;
+                    }
+                }
                 if (map.getValue() >= map.getKey().getNumberGiftOfDay()) {
                     ivCustomerPhone.setImageResource(R.drawable.ic_warning_red);
                 }
@@ -633,13 +646,111 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
                         if (totalProduct >= brandModel.getNumberOfEnough()) {
                             if (brandModel.getMaximumChangeGift() > -1) {
                                 brandRotationList.put(productModel1.getBrandID(), Math.min(totalProduct / brandModel.getNumberOfEnough(), brandModel.getMaximumChangeGift()));
+                                if (brandModel.getBrandCode().equals("BRTIGER")) {
+                                    brandCodeList.put(brandModel, Math.min(totalProduct / brandModel.getNumberOfEnough(), brandModel.getMaximumChangeGift()));
+                                }
                             } else {
                                 brandRotationList.put(productModel1.getBrandID(), totalProduct / brandModel.getNumberOfEnough());
+                                if (brandModel.getBrandCode().equals("BRTIGER")) {
+                                    brandCodeList.put(brandModel, totalProduct / brandModel.getNumberOfEnough());
+                                }
                             }
 
                         } else {
                             brandRotationList.remove(productModel1.getBrandID());
+                            if (brandModel.getBrandCode().equals("BRTIGER")) {
+                                brandCodeList.remove(brandModel);
+                            }
                         }
+
+                        if (brandCodeList.size() > 1) {
+                            int numberTopUp = 0;
+                            for (Map.Entry<Integer, Integer> map : topupChangeList.entrySet()) {
+                                numberTopUp += map.getValue();
+                            }
+                            if (numberTopUp == 0) {
+                                for (Map.Entry<BrandModel, Integer> map : brandCodeList.entrySet()) {
+                                    if (brandRotationList.containsKey(map.getKey().getId())) {
+                                        brandRotationList.put(map.getKey().getId(), map.getValue());
+                                    }
+                                }
+                            } else {
+                                for (Map.Entry<BrandModel, Integer> map : brandCodeList.entrySet()) {
+
+                                    if (brandRotationList.containsKey(map.getKey().getId())) {
+
+                                        if (numberTopUp == brandModel.getMaximumChangeGift()) {
+                                            brandRotationList.remove(map.getKey().getId());
+                                        } else {
+                                            brandRotationList.put(map.getKey().getId(), brandModel.getMaximumChangeGift() - numberTopUp);
+
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    } else if (brandModel.isTopupCard()) {
+                        List<ProductModel> productModelList = new ArrayList<>();
+                        productModelList.addAll(brandModel.getProductList());
+                        int totalProduct = number;
+                        for (ProductModel productModel2 : productModelList) {
+                            if (productModel2.getId() != productModel1.getId()) {
+                                if (productIdNumberList.get(productModel2.getId()) != null) {
+                                    totalProduct += productIdNumberList.get(productModel2.getId());
+                                }
+                            }
+                        }
+                        if (totalProduct >= brandModel.getNumberOfEnough()) {
+                            if (brandModel.getMaximumChangeGift() > -1) {
+                                topupChangeList.put(productModel1.getBrandID(), Math.min(totalProduct / brandModel.getNumberOfEnough(), brandModel.getMaximumChangeGift()));
+                                if (brandModel.getBrandCode().equals("BRTIGER")) {
+                                    brandCodeList.put(brandModel, Math.min(totalProduct / brandModel.getNumberOfEnough(), brandModel.getMaximumChangeGift()));
+                                }
+                            } else {
+                                topupChangeList.put(productModel1.getBrandID(), totalProduct / brandModel.getNumberOfEnough());
+                                if (brandModel.getBrandCode().equals("BRTIGER")) {
+                                    brandCodeList.put(brandModel, totalProduct / brandModel.getNumberOfEnough());
+                                }
+                            }
+
+                        } else {
+                            topupChangeList.remove(productModel1.getBrandID());
+                            if (brandModel.getBrandCode().equals("BRTIGER")) {
+                                brandCodeList.remove(brandModel);
+                            }
+                        }
+
+                        if (brandCodeList.size() > 1) {
+                            int numberTopUp = 0;
+                            for (Map.Entry<Integer, Integer> map : topupChangeList.entrySet()) {
+                                numberTopUp += map.getValue();
+                            }
+                            if (numberTopUp == 0) {
+                                for (Map.Entry<BrandModel, Integer> map : brandCodeList.entrySet()) {
+                                    if (brandRotationList.containsKey(map.getKey().getId())) {
+                                        brandRotationList.put(map.getKey().getId(), map.getValue());
+                                    }
+                                }
+                            } else {
+                                for (Map.Entry<BrandModel, Integer> map : brandCodeList.entrySet()) {
+                                    if (brandRotationList.containsKey(map.getKey().getId())) {
+                                        if (brandRotationList.containsKey(map.getKey().getId())) {
+
+                                            if (numberTopUp == brandModel.getMaximumChangeGift()) {
+                                                brandRotationList.remove(map.getKey().getId());
+                                            } else {
+                                                brandRotationList.put(map.getKey().getId(), brandModel.getMaximumChangeGift() - numberTopUp);
+
+                                            }
+
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+
                     } else {
                         if (number >= productModel1.getNumberOfEnough()) {
                             if (brandModel.getMaximumChangeGift() == -1) {
@@ -654,12 +765,10 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
                     }
                     if (number == 0) {
                         if (allNumberProductList.get(productModel1) != null) {
-                            //numberProductList.remove(productModel1.getId());
                             allNumberProductList.remove(productModel1);
                             productIdNumberList.remove(productModel1.getId());
                         }
                     } else {
-                        //numberProductList.put(productModel1.getId(), number);
                         allNumberProductList.put(productModel1, number);
                         productIdNumberList.put(productModel1.getId(), number);
                     }
@@ -749,11 +858,11 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
             return;
         }
 
-        if (brandRotationList.size() == 0 && productChooseNumberList.size() == 0 && productNotChangeList.size() == 0) {
+        if (brandRotationList.size() == 0 && productChooseNumberList.size() == 0 && productNotChangeList.size() == 0 && topupChangeList.size() == 0) {
             showError(getString(R.string.text_unqualified_change_gift));
             return;
         }
-
+        totalRotaion = 0;
         for (Map.Entry<Integer, Integer> map : brandRotationList.entrySet()) {
             totalRotaion += map.getValue();
         }
@@ -761,15 +870,19 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
         for (Map.Entry<ProductModel, Integer> map : productChooseNumberList.entrySet()) {
             totalRotaion += map.getValue();
         }
+
+        for (Map.Entry<Integer, Integer> map : topupChangeList.entrySet()) {
+            totalRotaion += map.getValue();
+        }
         if (totalRotaion == 0) {
             showError(getString(R.string.text_unqualified_change_gift));
             return;
         }
 
-        if (!TextUtils.isEmpty(etYearOfBirth.getText().toString())){
+        if (!TextUtils.isEmpty(etYearOfBirth.getText().toString())) {
             int year = Integer.parseInt(etYearOfBirth.getText().toString());
             int yearCurrent = Calendar.getInstance().get(Calendar.YEAR);
-            if (yearCurrent - year < 18){
+            if (yearCurrent - year < 18) {
                 showError("Tuổi dưới 18 , không hợp lệ");
                 return;
             }
@@ -786,7 +899,7 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
                         mPresenter.saveInfoCustomer(etOrderId.getText().toString(), etCustomerId.getText().toString(),
                                 etCustomerName.getText().toString(), etPhone.getText().toString(),
                                 sex, etEmail.getText().toString(), Integer.parseInt(etYearOfBirth.getText().toString().length() > 0 ? etYearOfBirth.getText().toString() : "0"), reasonBuy, etNote.getText().toString(), adapter.getList(),
-                                allNumberProductList, brandRotationList, productChooseNumberList, totalRotaion);
+                                allNumberProductList, brandRotationList, productChooseNumberList, topupChangeList);
 
                     }
                 }, new ConfirmProductDialog.OnCancleListener() {

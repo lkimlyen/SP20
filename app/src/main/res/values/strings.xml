@@ -92,7 +92,7 @@
     <string name="text_send_request_success">Gửi yêu cầu thành công</string>
     <string name="text_confirmed">Đã xác nhận</string>
     <string name="text_unconfirm">Chưa xác nhận</string>
-    <string name="text_confirm_success">Xác nhận thành công!</string>
+    <string name="text_confirm_success">Đã nhận quà</string>
     <string name="text_backup_data">Sao lưu dữ liệu</string>
     <string name="text_email_firebase">imarkcomp@gmail.com</string>
     <string name="text_password_firebase">Imark2017</string>

@@ -13,11 +13,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.demo.architect.data.model.offline.BrandModel;
 import com.demo.architect.data.model.offline.BrandSetDetailModel;
+import com.demo.architect.data.model.offline.BrandSetModel;
 import com.demo.architect.data.model.offline.CurrentBrandModel;
 import com.demo.sp19.R;
 import com.demo.sp19.app.base.BaseFragment;
 import com.demo.sp19.util.Precondition;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,7 +29,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
+import io.realm.Realm;
 
 /**
  * Created by MSI on 26/11/2017.
@@ -41,6 +44,8 @@ public class RequestGiftFragment extends BaseFragment implements RequestGiftCont
 
     @BindView(R.id.tv_send)
     TextView tvSend;
+
+    private Realm realm = Realm.getDefaultInstance();
 
     public RequestGiftFragment() {
         // Required empty public constructor
@@ -144,15 +149,22 @@ public class RequestGiftFragment extends BaseFragment implements RequestGiftCont
     }
 
     @Override
-    public void showListBrandSetDetailCurrent(LinkedHashMap<CurrentBrandModel, List<BrandSetDetailModel>> list) {
+    public void showListBrandSetDetailCurrent(LinkedHashMap<Object, List<BrandSetDetailModel>> list) {
         llGift.removeAllViews();
-        for (Map.Entry<CurrentBrandModel, List<BrandSetDetailModel>> map : list.entrySet()) {
+        for (Map.Entry<Object, List<BrandSetDetailModel>> map : list.entrySet()) {
             LayoutInflater inf = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View v = inf.inflate(R.layout.item_gift_product, null);
             TextView tvName = v.findViewById(R.id.tv_name);
             EditText etNumber = v.findViewById(R.id.et_number);
             etNumber.setTag(map.getKey());
-            tvName.setText(String.format(getString(R.string.text_set_gift), map.getKey().getBrandModel().getBrandName()));
+
+            if (map.getKey() instanceof BrandSetModel) {
+                BrandModel brandModel = realm.where(BrandModel.class).equalTo("id", ((BrandSetModel) map.getKey()).getBrandID()).findFirst();
+                tvName.setText(String.format(getString(R.string.text_set_gift), brandModel.getBrandName()));
+            } else {
+
+                tvName.setText(String.format(getString(R.string.text_set_gift), ((CurrentBrandModel) map.getKey()).getBrandModel().getBrandName()));
+            }
 
             etNumber.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -167,7 +179,8 @@ public class RequestGiftFragment extends BaseFragment implements RequestGiftCont
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    CurrentBrandModel productGiftModel = (CurrentBrandModel) etNumber.getTag();
+
+                    Object productGiftModel = etNumber.getTag();
                     int number = 0;
                     try {
                         number = Integer.parseInt(s.toString());
@@ -175,12 +188,21 @@ public class RequestGiftFragment extends BaseFragment implements RequestGiftCont
                         e.printStackTrace();
                     }
                     if (number > 0) {
-                        requestList.put(productGiftModel.getBrandSetID(), number);
+                        if (productGiftModel instanceof BrandSetModel)
+                            requestList.put(((BrandSetModel)productGiftModel).getId(), number);
+                        else   requestList.put(((CurrentBrandModel)productGiftModel).getBrandSetID(), number);
 
                     } else {
-                        if (requestList.get(productGiftModel.getBrandSetID()) != null) {
-                            requestList.remove(productGiftModel.getBrandSetID());
+                        if (productGiftModel instanceof BrandSetModel){
+                            if (requestList.get(((BrandSetModel)productGiftModel).getId()) != null) {
+                                requestList.remove(((BrandSetModel)productGiftModel).getId());
+                            }
+                        }else {
+                            if (requestList.get(((CurrentBrandModel)productGiftModel).getBrandSetID()) != null) {
+                                requestList.remove(((CurrentBrandModel)productGiftModel).getBrandSetID());
+                            }
                         }
+
                     }
                 }
             });
@@ -226,8 +248,9 @@ public class RequestGiftFragment extends BaseFragment implements RequestGiftCont
         });
 
     }
+
     @OnClick(R.id.iv_back)
-    public void back(){
+    public void back() {
         getActivity().finish();
     }
 }

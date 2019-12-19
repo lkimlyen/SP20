@@ -16,6 +16,7 @@ import com.demo.architect.data.helper.Constants;
 import com.demo.architect.data.model.ConfirmSetEntity;
 import com.demo.architect.data.model.offline.BrandModel;
 import com.demo.architect.data.model.offline.BrandSetModel;
+import com.demo.architect.utils.view.ConvertUtils;
 import com.demo.sp19.R;
 import com.demo.sp19.app.CoreApplication;
 
@@ -48,7 +49,7 @@ public class ConfirmSetAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return confirmList.get(position).getId();
+        return confirmList.get(position).getID();
     }
 
     @Override
@@ -71,16 +72,21 @@ public class ConfirmSetAdapter extends BaseAdapter {
 
 
     private void setDataToViews(ConfirmHolder holder, ConfirmSetEntity item) {
-        holder.tvDate.setText(item.getRequirementDateTime());
+        holder.tvDate.setText(ConvertUtils.convertLongToString(item.getCreatedAt()*1000));
         if (item.getStatus() == Constants.CONFIRMED) {
             holder.tvStatus.setText(String.format(CoreApplication.getInstance().getString(R.string.text_status),CoreApplication.getInstance().getString(R.string.text_warehouse_confirmed)));
             holder.btState.setVisibility(View.VISIBLE);
             holder.btState.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onConfirmListener.onConfirm(item.getId());
+                    onConfirmListener.onConfirm(item);
                 }
             });
+        }else if (item.getStatus() == Constants.RCEIVED) {
+            holder.tvStatus.setText(String.format(CoreApplication.getInstance().getString(R.string.text_status),CoreApplication.getInstance().getString(R.string.text_confirm_success)));
+
+            holder.btState.setVisibility(View.GONE);
+            holder.btState.setOnClickListener(null);
         } else {
             holder.tvStatus.setText(String.format(CoreApplication.getInstance().getString(R.string.text_status),CoreApplication.getInstance().getString(R.string.text_warehouse_unconfirmed)));
 
@@ -125,7 +131,7 @@ public class ConfirmSetAdapter extends BaseAdapter {
     }
 
     public interface OnConfirmListener {
-        void onConfirm(int id);
+        void onConfirm(ConfirmSetEntity item);
     }
 
 }

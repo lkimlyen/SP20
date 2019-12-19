@@ -887,12 +887,12 @@ public class LocalRepositoryImpl implements LocalRepository {
     }
 
     @Override
-    public Observable<LinkedHashMap<CurrentBrandModel, List<BrandSetDetailModel>>> getListBrandSetDetailCurrent(final int outletId) {
-        return Observable.create(new Observable.OnSubscribe<LinkedHashMap<CurrentBrandModel, List<BrandSetDetailModel>>>() {
+    public Observable<LinkedHashMap<Object, List<BrandSetDetailModel>>> getListBrandSetDetailCurrent(final int outletId) {
+        return Observable.create(new Observable.OnSubscribe<LinkedHashMap<Object, List<BrandSetDetailModel>>>() {
             @Override
-            public void call(Subscriber<? super LinkedHashMap<CurrentBrandModel, List<BrandSetDetailModel>>> subscriber) {
+            public void call(Subscriber<? super LinkedHashMap<Object, List<BrandSetDetailModel>>> subscriber) {
                 try {
-                    LinkedHashMap<CurrentBrandModel, List<BrandSetDetailModel>> list = databaseRealm.getListBrandSetDetailCurrent(outletId);
+                    LinkedHashMap<Object, List<BrandSetDetailModel>> list = databaseRealm.getListBrandSetDetailCurrent(outletId);
 
                     subscriber.onNext(list);
                     subscriber.onCompleted();
@@ -1840,12 +1840,12 @@ public class LocalRepositoryImpl implements LocalRepository {
     }
 
     @Override
-    public Observable<CustomerModel> getInfoCustomerById(final int customerId) {
-        return Observable.create(new Observable.OnSubscribe<CustomerModel>() {
+    public Observable< List<Object>> getInfoCustomerById(final int customerId) {
+        return Observable.create(new Observable.OnSubscribe< List<Object>>() {
             @Override
-            public void call(Subscriber<? super CustomerModel> subscriber) {
+            public void call(Subscriber<? super  List<Object>> subscriber) {
                 try {
-                    CustomerModel customerModel = databaseRealm.getInfoCustomerById(customerId);
+                    List<Object> customerModel = databaseRealm.getInfoCustomerById(customerId);
 
                     subscriber.onNext(customerModel);
                     subscriber.onCompleted();
@@ -2036,6 +2036,23 @@ public class LocalRepositoryImpl implements LocalRepository {
                     List<Integer> customerId = databaseRealm.getInfoSendRequest();
 
                     subscriber.onNext(customerId);
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Observable<Integer> saveStatusTopUpcard(final int customerId, final String phone) {
+        return Observable.create(new Observable.OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> subscriber) {
+                try {
+                    Integer number = databaseRealm.saveStatusTopUpcard(customerId,phone);
+
+                    subscriber.onNext(number);
                     subscriber.onCompleted();
                 } catch (Exception e) {
                     subscriber.onError(e);

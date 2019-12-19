@@ -6,12 +6,9 @@ import com.demo.architect.data.model.ConfirmSetEntity;
 import com.demo.architect.data.model.CurrentBrandSetEntity;
 import com.demo.architect.data.model.GiftMegaEntity;
 import com.demo.architect.data.model.ProductGiftEntity;
-import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -292,11 +289,13 @@ public class GiftRepositoryImpl implements GiftRepository {
     }
 
     @Override
-    public Observable<BaseResponse> confirmWarehouseRequirementSet(final String appCode, final int id, final int userId) {
+    public Observable<BaseResponse> confirmWarehouseRequirementSet(final Map<String, Object> params) {
         return Observable.create(new ObservableOnSubscribe<BaseResponse>() {
             @Override
             public void subscribe(ObservableEmitter<BaseResponse> emitter) throws Exception {
-                handleBaseResponse(mRemoteApiInterface.confirmWarehouseRequirementSet(appCode, id, userId), emitter);
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), (new JSONObject(params)).toString());
+
+                handleBaseResponse(mRemoteApiInterface.confirmWarehouseRequirementSet(System.currentTimeMillis()/1000,body), emitter);
             }
         });
 
@@ -326,11 +325,11 @@ public class GiftRepositoryImpl implements GiftRepository {
     }
 
     @Override
-    public Observable<BaseListResponse<ConfirmSetEntity>> getWarehouseRequirement(final String appCode, final int outletId) {
+    public Observable<BaseListResponse<ConfirmSetEntity>> getWarehouseRequirement(final String tokenBearer,final long token, final int outletId) {
         return Observable.create(new ObservableOnSubscribe<BaseListResponse<ConfirmSetEntity>>() {
             @Override
             public void subscribe(ObservableEmitter<BaseListResponse<ConfirmSetEntity>> emitter) throws Exception {
-                handleConfirmResponse(mRemoteApiInterface.getWarehouseRequirement(appCode, outletId), emitter);
+                handleConfirmResponse(mRemoteApiInterface.getWarehouseRequirement(tokenBearer,outletId, token), emitter);
             }
         });
 
@@ -381,14 +380,12 @@ public class GiftRepositoryImpl implements GiftRepository {
     }
 
     @Override
-    public Observable<BaseResponse<ConfirmSetEntity>> sendRequestGift(final int spId, final LinkedHashMap<Integer, Integer> bradnsetList) {
+    public Observable<BaseResponse<ConfirmSetEntity>> sendRequestGift(final Map<String, Object> bradnsetList) {
         return Observable.create(new ObservableOnSubscribe<BaseResponse<ConfirmSetEntity>>() {
             @Override
             public void subscribe(ObservableEmitter<BaseResponse<ConfirmSetEntity>> emitter) throws Exception {
-                Map<String, Object> params = new HashMap<>();
-                params.put("SPID", spId);
-                params.put("BrandSets", new Gson().toJson(bradnsetList));
-                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), (new JSONObject(params)).toString());
+
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), (new JSONObject(bradnsetList)).toString());
                 long queryToken = System.currentTimeMillis()/1000;
                 handleConfirmSetResponse(mRemoteApiInterface.sendRequestGift(queryToken,body), emitter);
             }

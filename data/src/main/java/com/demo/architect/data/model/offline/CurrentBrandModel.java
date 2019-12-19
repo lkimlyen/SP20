@@ -135,8 +135,8 @@ public class CurrentBrandModel extends RealmObject {
         IsUsed = used;
     }
 
-    public static LinkedHashMap<CurrentBrandModel, List<BrandSetDetailModel>> getListBrandSetDetailCurrent(Realm realm, int outletId) {
-        LinkedHashMap<CurrentBrandModel, List<BrandSetDetailModel>> list = new LinkedHashMap<>();
+    public static LinkedHashMap<Object, List<BrandSetDetailModel>> getListBrandSetDetailCurrent(Realm realm, int outletId) {
+        LinkedHashMap<Object, List<BrandSetDetailModel>> list = new LinkedHashMap<>();
         RealmResults<CurrentBrandModel> results = realm.where(CurrentBrandModel.class)
                 .equalTo("OutletID", outletId)
                 .equalTo("IsUsed", true).findAll().sort("BrandID", Sort.ASCENDING);
@@ -145,6 +145,20 @@ public class CurrentBrandModel extends RealmObject {
                     .equalTo("BrandSetID", currentBrandModel.getBrandSetID()).findAll();
             list.put(currentBrandModel, realm.copyFromRealm(brandSetDetailModels));
         }
+
+        RealmResults<BrandModel> brandModels = realm.where(BrandModel.class).equalTo("IsDialLucky", false).equalTo("IsRequest", true).findAll();
+        for (BrandModel brandModel : brandModels) {
+
+            RealmResults<BrandSetModel> brandSetModels = realm.where(BrandSetModel.class).equalTo("BrandID", brandModel.getId()).findAll();
+
+            for (BrandSetModel brandSetModel : brandSetModels){
+                RealmResults<BrandSetDetailModel> brandSetDetailModels = realm.where(BrandSetDetailModel.class)
+                        .equalTo("BrandSetID", brandSetModel.getId()).findAll();
+                list.put(brandSetModel, realm.copyFromRealm(brandSetDetailModels));
+            }
+
+        }
+
         return list;
     }
 

@@ -2,7 +2,6 @@ package com.demo.architect.domain;
 
 import android.util.Log;
 
-import com.demo.architect.data.helper.Constants;
 import com.demo.architect.data.model.BaseListResponse;
 import com.demo.architect.data.model.ConfirmSetEntity;
 import com.demo.architect.data.repository.base.gift.remote.GiftRepository;
@@ -24,7 +23,8 @@ public class GetWarehouseRequirementUsecase extends BaseUseCase<BaseListResponse
     @Override
     protected Observable<BaseListResponse<ConfirmSetEntity>> buildUseCaseObservable() {
         int outletId = ((RequestValue) requestValues).outletId;
-        return remoteRepository.getWarehouseRequirement(Constants.APP_CODE, outletId);
+        long token = System.currentTimeMillis()/1000;
+        return remoteRepository.getWarehouseRequirement("Bearer "+token,token, outletId);
 
     }
     @Override

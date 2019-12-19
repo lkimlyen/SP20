@@ -1,7 +1,8 @@
 package com.demo.sp19.screen.confirm_set;
 
-import androidx.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.demo.architect.data.model.offline.BrandModel;
 import com.demo.architect.data.model.offline.BrandSetModel;
@@ -14,6 +15,7 @@ import com.demo.sp19.app.CoreApplication;
 import com.demo.sp19.manager.UserManager;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -68,9 +70,9 @@ public class ConfirmSetPresenter implements ConfirmSetContract.Presenter {
     }
 
     @Override
-    public void confirmSet(int id) {
+    public void confirmSet(Map<String, Object> params) {
         view.showProgressBar();
-        confirmWarehouseRequirementSetUsecase.executeIO(new ConfirmWarehouseRequirementSetUsecase.RequestValue(id, UserManager.getInstance().getUser().getUserId()),
+        confirmWarehouseRequirementSetUsecase.executeIO(new ConfirmWarehouseRequirementSetUsecase.RequestValue(params),
                 new BaseUseCase.UseCaseCallback<ConfirmWarehouseRequirementSetUsecase.ResponseValue,
                         ConfirmWarehouseRequirementSetUsecase.ErrorValue>() {
                     @Override
@@ -101,7 +103,7 @@ public class ConfirmSetPresenter implements ConfirmSetContract.Presenter {
     public void getListConfirmRequestGift(boolean upload) {
         view.showProgressBar();
         //lấy ds yêu cầu set quà
-        getWarehouseRequirementUsecase.executeIO(new GetWarehouseRequirementUsecase.RequestValue(UserManager.getInstance().getUser().getOutlet().getOutletId()),
+        getWarehouseRequirementUsecase.executeIO(new GetWarehouseRequirementUsecase.RequestValue(UserManager.getInstance().getUser().getUserId()),
                 new BaseUseCase.UseCaseCallback<GetWarehouseRequirementUsecase.ResponseValue,
                         GetWarehouseRequirementUsecase.ErrorValue>() {
                     @Override

@@ -19,6 +19,9 @@ public class BrandEntitiy {
     @SerializedName("IsDialLucky")
     @Expose
     private boolean isDialLucky;
+    @SerializedName("IsTopUpCard")
+    @Expose
+    private boolean isTopupCard;
 
     @SerializedName("MaximumChangeGift")
     @Expose
@@ -31,6 +34,10 @@ public class BrandEntitiy {
     @SerializedName("NumberGiftOfDay")
     @Expose
     private int numberGiftOfDay;
+
+    @SerializedName("IsRequest")
+    @Expose
+    private boolean isRequest;
 
     public int getId() {
         return id;
@@ -58,5 +65,13 @@ public class BrandEntitiy {
 
     public int getNumberGiftOfDay() {
         return numberGiftOfDay;
+    }
+
+    public boolean isTopupCard() {
+        return isTopupCard;
+    }
+
+    public boolean isRequest() {
+        return isRequest;
     }
 }

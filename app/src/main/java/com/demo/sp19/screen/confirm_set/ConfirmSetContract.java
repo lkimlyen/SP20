@@ -9,6 +9,7 @@ import com.demo.sp19.app.base.BaseView;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by MSI on 26/11/2017.
@@ -23,7 +24,7 @@ public interface ConfirmSetContract {
         void getListConfirmReciever();
 
         //xác nhận số set quà đã nhận
-        void confirmSet(int id);
+        void confirmSet(Map<String, Object> params);
 
         //lấy ds yêu câu quà chưa được giao
         void getListConfirmRequestGift(boolean upload);

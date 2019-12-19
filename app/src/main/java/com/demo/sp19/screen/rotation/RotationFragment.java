@@ -31,8 +31,10 @@ import com.demo.architect.data.model.offline.CustomerGiftModel;
 import com.demo.architect.data.model.offline.CustomerModel;
 import com.demo.architect.data.model.offline.GiftModel;
 import com.demo.architect.data.model.offline.ProductGiftModel;
+import com.demo.architect.data.model.offline.ProductModel;
 import com.demo.architect.data.model.offline.TotalChangeGiftModel;
 import com.demo.architect.data.model.offline.TotalRotationBrandModel;
+import com.demo.architect.data.model.offline.TotalTopupModel;
 import com.demo.architect.utils.view.ConvertUtils;
 import com.demo.architect.utils.view.FileUtils;
 import com.demo.sp19.R;
@@ -61,6 +63,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
 
 /**
  * Created by MSI on 26/11/2017.
@@ -128,6 +131,7 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
     private boolean isRotation = false;
     int goccuoi = 0;
     private List<GiftModel> mGiftList = new ArrayList<>();
+    private TotalTopupModel totalTopupModel;
     TopupCardDialog dialog;
     //key: brandId, value: co hoan thanh set hay khong
     private LinkedHashMap<Integer, Boolean> brandChangeSetList = new LinkedHashMap<>();
@@ -297,11 +301,17 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
 
         TextView tvNumber = view.findViewById(R.id.tv_number);
         int total = 0;
-        for (TotalChangeGiftModel totalChangeGiftModel : totalChangeGiftList) {
-            if (totalChangeGiftModel.getBrandId() == brandModel.getId()) {
-                total += totalChangeGiftModel.getNumberChange();
+        if (brandModel.isTopupCard()) {
+            total = totalTopupModel.getNumberTotal();
+            isTopupCard = !totalTopupModel.isFinished();
+        } else {
+            for (TotalChangeGiftModel totalChangeGiftModel : totalChangeGiftList) {
+                if (totalChangeGiftModel.getBrandId() == brandModel.getId()) {
+                    total += totalChangeGiftModel.getNumberChange();
+                }
             }
         }
+
         tvNumber.setText(String.valueOf(total));
         llGiftBrand.removeAllViews();
         for (ProductGiftModel giftModel : giftModels) {
@@ -309,8 +319,7 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
             TextView tvName = v.findViewById(R.id.tv_name);
             EditText etNumber = v.findViewById(R.id.et_number);
             etNumber.setTag(giftModel);
-            if (giftModel.getGiftModel().isTopupCard())
-                isTopupCard = true;
+
             tvName.setText(giftModel.getGiftModel().getGiftName());
             editTextList.add(etNumber);
             ImageView ivGift = v.findViewById(R.id.iv_gift);
@@ -327,14 +336,19 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
             ivGift.setLayoutParams(layoutParams);
             File file = new File(giftModel.getGiftModel().getFilePath());
             Picasso.get().load(file).into(ivGift);
-            for (TotalChangeGiftModel totalChangeGiftModel : totalChangeGiftList) {
-                if (giftModel.getProductID() == totalChangeGiftModel.getProductId()) {
-                    etNumber.setText(String.valueOf(totalChangeGiftModel.getNumberChange()));
-                    giftProductChangeList.put(giftModel.getGiftModel(), totalChangeGiftModel.getNumberChange());
-                    break;
+            if (brandModel.isTopupCard()) {
+                etNumber.setText(String.valueOf(total));
+                giftProductChangeList.put(giftModel.getGiftModel(), total);
+            } else {
+                for (TotalChangeGiftModel totalChangeGiftModel : totalChangeGiftList) {
+                    if (giftModel.getProductID() == totalChangeGiftModel.getProductId()) {
+                        etNumber.setText(String.valueOf(totalChangeGiftModel.getNumberChange()));
+                        giftProductChangeList.put(giftModel.getGiftModel(), totalChangeGiftModel.getNumberChange());
+                        break;
+                    }
                 }
-            }
 
+            }
             etNumber.setEnabled(false);
 
             llGiftBrand.addView(v);
@@ -417,11 +431,13 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
     }
 
     @Override
-    public void showInfoCustomerAndListTotalBrand(CustomerModel customerModel, List<TotalRotationBrandModel> list, List<TotalChangeGiftModel> totalChangeGiftModels) {
+    public void showInfoCustomerAndListTotalBrand(CustomerModel customerModel, List<TotalRotationBrandModel> list,
+                                                  List<TotalChangeGiftModel> totalChangeGiftModels, TotalTopupModel totalTopupModel) {
         tvCustomerName.setText(customerModel.getCustomerName());
         tvCustomerPhone.setText(customerModel.getCustomerPhone());
         totalBrandList = list;
         totalChangeGiftList = totalChangeGiftModels;
+        this.totalTopupModel = totalTopupModel;
         if (list.size() > 0) {
             positonBrand = 0;
             countClick = list.get(positonBrand).getNumberTotal() - list.get(positonBrand).getNumberTurned();
@@ -430,6 +446,11 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
         } else {
             tvTitle.setText("Thông tin đổi quà");
             List<Integer> productIdList = new ArrayList<>();
+            if (totalTopupModel != null) {
+                Realm realm = Realm.getDefaultInstance();
+                ProductModel productModel = realm.where(ProductModel.class).equalTo("BrandID", totalTopupModel.getBrandId()).findFirst();
+                productIdList.add((realm.copyFromRealm(productModel)).getId());
+            }
             for (TotalChangeGiftModel totalChangeGiftModel : totalChangeGiftList) {
                 productIdList.add(totalChangeGiftModel.getProductId());
             }
@@ -448,7 +469,7 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
         dialog.setConfirmListener(new TopupCardDialog.OnConfirmListener() {
             @Override
             public void onConfirm(String phone, String type) {
-                mPresenter.sendTopupCard(phone, type);
+                mPresenter.sendTopupCard(customerId, phone, type);
             }
         });
     }
@@ -456,7 +477,16 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
     @Override
     public void sendTopupSuccessfully() {
         dialog.dismiss();
-        showSuccess("Gửi thành công");
+
+        Toast.makeText(getContext(), "Gửi thành công", Toast.LENGTH_SHORT).show();
+        isTopupCard = false;
+        if (brandChangeSetList.size() > 0) {
+            mPresenter.confirmChangeSet(customerId, brandChangeSetList, giftProductChangeList);
+        } else if (giftProductChangeList.size() > 0) {
+            mPresenter.saveGift(customerId, giftProductChangeList);
+        } else {
+            mPresenter.goToMega(customerId);
+        }
     }
 
     private void startAnimation() {
@@ -557,9 +587,14 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
             countClick = totalBrandList.get(positonBrand).getNumberTotal() - totalBrandList.get(positonBrand).getNumberTurned();
             tvCount.setText(String.format(getString(R.string.text_have_turns), countClick));
             mPresenter.getListBackGround(totalBrandList.get(positonBrand).getBrandId());
-        } else if (totalChangeGiftList.size() > 0 && !isChooseGift) {
+        } else if ((totalChangeGiftList.size() > 0 || totalTopupModel != null) && !isChooseGift) {
             tvTitle.setText("Thông tin đổi quà");
             List<Integer> productIdList = new ArrayList<>();
+            if (totalTopupModel != null) {
+                Realm realm = Realm.getDefaultInstance();
+                ProductModel productModel = realm.where(ProductModel.class).equalTo("BrandID", totalTopupModel.getBrandId()).findFirst();
+                productIdList.add((realm.copyFromRealm(productModel)).getId());
+            }
             for (TotalChangeGiftModel totalChangeGiftModel : totalChangeGiftList) {
                 productIdList.add(totalChangeGiftModel.getProductId());
             }
@@ -572,19 +607,25 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
                 giftRotationList.put(customerGiftModel.getGiftModel(), customerGiftModel.getNumberGift());
             }
             giftRotationList.putAll(giftProductChangeList);
+
             ConfirmGiftDialog dialog = new ConfirmGiftDialog();
             dialog.show(getActivity().getFragmentManager(), TAG);
             dialog.setGiftList(giftRotationList);
             dialog.setListener(new ConfirmGiftDialog.OnConfirmListener() {
                 @Override
                 public void onConfirm() {
-                    if (brandChangeSetList.size() > 0) {
-                        mPresenter.confirmChangeSet(customerId, brandChangeSetList, giftProductChangeList, isTopupCard);
-                    } else if (giftProductChangeList.size() > 0) {
-                        mPresenter.saveGift(customerId, giftProductChangeList, isTopupCard);
+                    if (isTopupCard) {
+                        showDialogTopUp();
                     } else {
-                        mPresenter.goToMega(customerId, isTopupCard);
+                        if (brandChangeSetList.size() > 0) {
+                            mPresenter.confirmChangeSet(customerId, brandChangeSetList, giftProductChangeList);
+                        } else if (giftProductChangeList.size() > 0) {
+                            mPresenter.saveGift(customerId, giftProductChangeList);
+                        } else {
+                            mPresenter.goToMega(customerId);
+                        }
                     }
+
                 }
 
             });

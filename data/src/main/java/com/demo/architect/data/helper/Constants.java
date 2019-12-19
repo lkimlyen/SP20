@@ -13,6 +13,7 @@ public class Constants {
     //trạng thái đã xác nhận
     public static final int CONFIRMED= 2;
 
+    public static final int RCEIVED= 3;
     //trạng thái kết thúc
     public static final int FINISHED= 1;
 

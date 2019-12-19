@@ -17,11 +17,13 @@ import com.demo.architect.data.model.offline.BrandSetModel;
 import com.demo.sp19.R;
 import com.demo.sp19.adapter.ConfirmSetAdapter;
 import com.demo.sp19.app.base.BaseFragment;
+import com.demo.sp19.dialogs.ConfirmSetGiftDialog;
 import com.demo.sp19.util.Precondition;
 import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -145,15 +147,29 @@ public class ConfirmSetFragment extends BaseFragment implements ConfirmSetContra
         srlRequest.setRefreshing(false);
         adapter = new ConfirmSetAdapter(new ConfirmSetAdapter.OnConfirmListener() {
             @Override
-            public void onConfirm(int id) {
-                mPresenter.confirmSet(id);
+            public void onConfirm(ConfirmSetEntity confirmSetEntity) {
+                ConfirmSetGiftDialog dialog = new ConfirmSetGiftDialog();
+                dialog.show(getActivity().getFragmentManager(), TAG);
+                dialog.setConfirmSetEntity(confirmSetEntity);
+                dialog.setListener(new ConfirmSetGiftDialog.OnConfirmListener() {
+                    @Override
+                    public void onConfirm(Map<String, Object> params) {
+                        mPresenter.confirmSet(params);
+                    }
+                }, new ConfirmSetGiftDialog.OnCancleListener() {
+                    @Override
+                    public void onCancle() {
+
+                    }
+                });
+
             }
         }, confirmList, brandSetList);
         lvRequest.setAdapter(adapter);
-        if (confirmList.size() > 0){
+        if (confirmList.size() > 0) {
 
             tvNoData.setVisibility(View.GONE);
-        }else {
+        } else {
             tvNoData.setVisibility(View.VISIBLE);
         }
     }

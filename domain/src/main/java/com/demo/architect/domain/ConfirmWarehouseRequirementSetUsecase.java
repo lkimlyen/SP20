@@ -2,9 +2,10 @@ package com.demo.architect.domain;
 
 import android.util.Log;
 
-import com.demo.architect.data.helper.Constants;
 import com.demo.architect.data.model.BaseResponse;
 import com.demo.architect.data.repository.base.gift.remote.GiftRepository;
+
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.observers.DisposableObserver;
@@ -20,9 +21,9 @@ public class ConfirmWarehouseRequirementSetUsecase extends BaseUseCase<BaseRespo
 
     @Override
     protected Observable<BaseResponse> buildUseCaseObservable() {
-        int id = ((RequestValue) requestValues).id;
-        int userId = ((RequestValue) requestValues).userId;
-        return remoteRepository.confirmWarehouseRequirementSet(Constants.APP_CODE, id,userId);
+        Map<String, Object> params = ((RequestValue) requestValues).params;
+
+        return remoteRepository.confirmWarehouseRequirementSet(params);
 
     }
 
@@ -58,12 +59,10 @@ public class ConfirmWarehouseRequirementSetUsecase extends BaseUseCase<BaseRespo
     }
 
     public static final class RequestValue implements RequestValues {
-        private final int id;
-        private final int userId;
+        private final Map<String, Object> params;
 
-        public RequestValue(int id, int userId) {
-            this.id = id;
-            this.userId = userId;
+        public RequestValue(Map<String, Object> params) {
+            this.params = params;
         }
     }
 

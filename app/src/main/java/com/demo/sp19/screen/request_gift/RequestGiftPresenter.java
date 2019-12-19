@@ -22,7 +22,12 @@ import com.demo.sp19.manager.UserManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,9 +76,9 @@ public class RequestGiftPresenter implements RequestGiftContract.Presenter {
     @Override
     public void getListBrandSetDetailCurrent() {
         //lấy danh sác set quà hiện tại của outlet
-        localRepository.getListBrandSetDetailCurrent( UserManager.getInstance().getUser().getOutlet().getOutletId()).subscribe(new Action1<LinkedHashMap<CurrentBrandModel, List<BrandSetDetailModel>>>() {
+        localRepository.getListBrandSetDetailCurrent(UserManager.getInstance().getUser().getOutlet().getOutletId()).subscribe(new Action1<LinkedHashMap<Object, List<BrandSetDetailModel>>>() {
             @Override
-            public void call(LinkedHashMap<CurrentBrandModel, List<BrandSetDetailModel>> brandModelListLinkedHashMap) {
+            public void call(LinkedHashMap<Object, List<BrandSetDetailModel>> brandModelListLinkedHashMap) {
                 view.showListBrandSetDetailCurrent(brandModelListLinkedHashMap);
             }
         });
@@ -85,25 +90,31 @@ public class RequestGiftPresenter implements RequestGiftContract.Presenter {
         List<DetailRequestGiftModel> list = new ArrayList<>();
         String code = ConvertUtils.getCodeGenerationByTime();
         String dateRequest = ConvertUtils.getDateTimeCurrent();
+        List<Request> requestList = new ArrayList<>();
+
         for (Map.Entry<Integer, Integer> map : linkedHashMap.entrySet()) {
+            requestList.add(new Request(map.getKey(), map.getValue()));
             DetailRequestGiftModel detailRequestGiftModel = new DetailRequestGiftModel(user.getOutlet().getOutletId(),
                     code, map.getKey(), map.getValue(), dateRequest, user.getTeamOutletId(), TokenManager.getInstance().getToken());
             list.add(detailRequestGiftModel);
         }
+        Map<String, Object> params = new HashMap<>();
+        params.put("SPID", user.getUserId());
+        params.put("BrandSets", getCartJson(requestList));
         GsonBuilder builder = new GsonBuilder();
         builder.excludeFieldsWithoutExposeAnnotation();
         Gson gson = builder.create();
         String json = gson.toJson(list);
         view.showProgressBar();
-        sendRequestGiftUsecase.executeIO(new SendRequestGiftUsecase.RequestValue(UserManager.getInstance().getUser().getUserId(), linkedHashMap),
+        sendRequestGiftUsecase.executeIO(new SendRequestGiftUsecase.RequestValue(params),
                 new BaseUseCase.UseCaseCallback<SendRequestGiftUsecase.ResponseValue,
                         SendRequestGiftUsecase.ErrorValue>() {
                     @Override
                     public void onSuccess(SendRequestGiftUsecase.ResponseValue successResponse) {
                         view.hideProgressBar();
-                        RequestGiftModel requestGiftModel = new RequestGiftModel(successResponse.getDescription().getId(),
-                                code,user.getOutlet().getOutletId(),user.getTeamOutletId(),dateRequest, Constants.UNCONFIRMED);
-                        localRepository.saveRequestGift(requestGiftModel,list).subscribe(new Action1<String>() {
+                        RequestGiftModel requestGiftModel = new RequestGiftModel(successResponse.getDescription().getID(),
+                                code, user.getOutlet().getOutletId(), user.getTeamOutletId(), dateRequest, Constants.UNCONFIRMED);
+                        localRepository.saveRequestGift(requestGiftModel, list).subscribe(new Action1<String>() {
                             @Override
                             public void call(String s) {
                                 view.showSuccess(CoreApplication.getInstance().getString(R.string.text_send_request_success));
@@ -124,4 +135,41 @@ public class RequestGiftPresenter implements RequestGiftContract.Presenter {
 
     }
 
+    public class Request {
+        private int BrandSetID;
+        private int Number;
+
+        public Request(int brandSetID, int number) {
+            BrandSetID = brandSetID;
+            Number = number;
+        }
+
+        public int getBrandSetID() {
+            return BrandSetID;
+        }
+
+        public int getNumber() {
+            return Number;
+        }
+    }
+    public JSONArray getCartJson(List<Request> list) {
+
+        JSONArray jsonArr = new JSONArray();
+        try {
+
+
+            for (Request request : list) {
+                JSONObject sellerObj = new JSONObject();
+                sellerObj.put("BrandSetID",request.getBrandSetID());
+                sellerObj.put("Number", request.getNumber());
+
+                jsonArr.put(sellerObj);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonArr;
+
+    }
 }

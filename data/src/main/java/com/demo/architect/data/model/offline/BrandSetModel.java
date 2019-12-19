@@ -80,4 +80,6 @@ public class BrandSetModel extends RealmObject {
     public int getTotalGift() {
         return TotalGift;
     }
+
+
 }

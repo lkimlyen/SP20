@@ -416,6 +416,9 @@ public class CustomerModel extends RealmObject implements Serializable {
                             brandModelIntegerLinkedHashMap.put(brandModel, countGift);
                         }
 
+                        if (brandModel.isTopupCard()){
+                            break;
+                        }
 
                     }
                 }
@@ -602,14 +605,19 @@ public class CustomerModel extends RealmObject implements Serializable {
         return list;
     }
 
-    public static CustomerModel getInfoCustomerById(Realm realm, int customerId) {
+    public static List<Object> getInfoCustomerById(Realm realm, int customerId) {
+        List<Object> list = new ArrayList<>();
         CustomerModel customerModel = realm.where(CustomerModel.class).equalTo("Id", customerId).findFirst();
         RealmResults<TotalRotationBrandModel> totalRotationBrandModels = realm.where(TotalRotationBrandModel.class)
                 .equalTo("CustomerId", customerId).equalTo("Finished", false).findAll();
-
-        return realm.copyFromRealm(customerModel);
-
-
+        RealmResults<TotalChangeGiftModel> results = realm.where(TotalChangeGiftModel.class)
+                .equalTo("CustomerId", customerId).findAll();
+        TotalTopupModel totalTopupModel = realm.where(TotalTopupModel.class).equalTo("CustomerId",customerId).equalTo("Finished",false).findFirst();
+        list.add(realm.copyFromRealm(customerModel));
+        list.add(realm.copyFromRealm(totalRotationBrandModels));
+        list.add(realm.copyFromRealm(results));
+        list.add(totalTopupModel);
+        return list;
     }
 
     public static List<TotalRotationBrandModel> getListTotalRotationBrand(Realm realm, int customerId) {
@@ -644,4 +652,6 @@ public class CustomerModel extends RealmObject implements Serializable {
         }
 
     }
+
+
 }

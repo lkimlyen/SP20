@@ -20,6 +20,7 @@ import com.demo.architect.data.model.offline.GiftModel;
 import com.demo.architect.data.model.offline.ProductGiftModel;
 import com.demo.architect.data.model.offline.TotalChangeGiftModel;
 import com.demo.architect.data.model.offline.TotalRotationBrandModel;
+import com.demo.architect.data.model.offline.TotalTopupModel;
 import com.demo.architect.data.repository.base.local.LocalRepository;
 import com.demo.architect.domain.AddBrandSetUsedUsecase;
 import com.demo.architect.domain.AddCustomerGiftUsecase;
@@ -174,7 +175,7 @@ public class RotationPresenter implements RotationContract.Presenter {
     private int positionBrand = 0;
 
     //thay đổi set quà
-    public void changeBrandGift(int customerId, List<ChooseSetEntitiy> chooseSetEntitiys, LinkedHashMap<Integer, Boolean> stateBrandSetList, LinkedHashMap<GiftModel, Integer> giftList, boolean isTopupCard) {
+    public void changeBrandGift(int customerId, List<ChooseSetEntitiy> chooseSetEntitiys, LinkedHashMap<Integer, Boolean> stateBrandSetList, LinkedHashMap<GiftModel, Integer> giftList) {
 
         //lấy set quà đổi theo thứ tự positionBrand
         ChooseSetEntitiy chooseSetEntitiy = chooseSetEntitiys.get(positionBrand);
@@ -199,12 +200,12 @@ public class RotationPresenter implements RotationContract.Presenter {
 
                                             if (positionBrand < chooseSetEntitiys.size() - 1) {
                                                 positionBrand++;
-                                                changeBrandGift(customerId, chooseSetEntitiys, stateBrandSetList, giftList, isTopupCard);
+                                                changeBrandGift(customerId, chooseSetEntitiys, stateBrandSetList, giftList);
                                             } else {
 
                                                 view.hideProgressBar();
                                                 if (giftList.size() > 0) {
-                                                    saveGift(customerId, giftList, isTopupCard);
+                                                    saveGift(customerId, giftList);
                                                 } else {
 //                                                    localRepository.getInfoSendRequest().subscribe(new Action1<List<Integer>>() {
 //                                                        @Override
@@ -219,7 +220,7 @@ public class RotationPresenter implements RotationContract.Presenter {
 //
 //                                                        }
 //                                                    });
-                                                    goToMega(customerId, isTopupCard);
+                                                    goToMega(customerId);
                                                 }
                                             }
                                         }
@@ -230,7 +231,7 @@ public class RotationPresenter implements RotationContract.Presenter {
                         public void onError(UpdateChangeSetUsecase.ErrorValue errorResponse) {
                             if (positionBrand < chooseSetEntitiys.size() - 1) {
                                 positionBrand++;
-                                changeBrandGift(customerId, chooseSetEntitiys, stateBrandSetList, giftList, isTopupCard);
+                                changeBrandGift(customerId, chooseSetEntitiys, stateBrandSetList, giftList);
                             } else {
                                 view.hideProgressBar();
                                 if (errorResponse.getDescription().contains(CoreApplication.getInstance().getString(R.string.text_no_address_associated))) {
@@ -263,12 +264,12 @@ public class RotationPresenter implements RotationContract.Presenter {
                                                         //view.showSuccess(CoreApplication.getInstance().getString(R.string.text_update_set_gift_success));
                                                         if (positionBrand < chooseSetEntitiys.size() - 1) {
                                                             positionBrand++;
-                                                            changeBrandGift(customerId, chooseSetEntitiys, stateBrandSetList, giftList, isTopupCard);
+                                                            changeBrandGift(customerId, chooseSetEntitiys, stateBrandSetList, giftList);
                                                         } else {
                                                             view.hideProgressBar();
                                                             if (giftList.size() > 0) {
 
-                                                                saveGift(customerId, giftList, isTopupCard);
+                                                                saveGift(customerId, giftList);
                                                             } else {
 //                                                                localRepository.getInfoSendRequest().subscribe(new Action1<List<Integer>>() {
 //                                                                    @Override
@@ -283,7 +284,7 @@ public class RotationPresenter implements RotationContract.Presenter {
 //
 //                                                                    }
 //                                                                });
-                                                                goToMega(customerId, isTopupCard);
+                                                                goToMega(customerId);
                                                             }
                                                         }
                                                     }
@@ -295,7 +296,7 @@ public class RotationPresenter implements RotationContract.Presenter {
 
                                         if (positionBrand < chooseSetEntitiys.size() - 1) {
                                             positionBrand++;
-                                            changeBrandGift(customerId, chooseSetEntitiys, stateBrandSetList, giftList, isTopupCard);
+                                            changeBrandGift(customerId, chooseSetEntitiys, stateBrandSetList, giftList);
                                         } else {
                                             view.hideProgressBar();
                                             if (errorResponse.getDescription().contains(CoreApplication.getInstance().getString(R.string.text_no_address_associated))) {
@@ -309,13 +310,13 @@ public class RotationPresenter implements RotationContract.Presenter {
                     } else {
                         if (positionBrand < chooseSetEntitiys.size() - 1) {
                             positionBrand++;
-                            changeBrandGift(customerId, chooseSetEntitiys, stateBrandSetList, giftList, isTopupCard);
+                            changeBrandGift(customerId, chooseSetEntitiys, stateBrandSetList, giftList);
                         } else {
 
                             view.hideProgressBar();
                             if (giftList.size() > 0) {
 //lưu thông tin quà của customer
-                                saveGift(customerId, giftList, isTopupCard);
+                                saveGift(customerId, giftList);
                             } else {
 //                                localRepository.getInfoSendRequest().subscribe(new Action1<List<Integer>>() {
 //                                    @Override
@@ -331,7 +332,7 @@ public class RotationPresenter implements RotationContract.Presenter {
 //                                    }
 //                                });
 
-                                goToMega(customerId, isTopupCard);
+                                goToMega(customerId);
                             }
                         }
                     }
@@ -344,23 +345,12 @@ public class RotationPresenter implements RotationContract.Presenter {
     @Override
     public void getInfoCustomerById(int customerId) {
         //lấy thông tin customer theo id
-        localRepository.getInfoCustomerById(customerId).subscribe(new Action1<CustomerModel>() {
+        localRepository.getInfoCustomerById(customerId).subscribe(new Action1<List<Object>>() {
             @Override
-            public void call(CustomerModel customerModel) {
+            public void call(List<Object> objects) {
                 //lấy tổng số vòng quay còn lại của brand theo customerid
-                localRepository.getListTotalRotationBrand(customerId).subscribe(new Action1<List<TotalRotationBrandModel>>() {
-                    @Override
-                    public void call(List<TotalRotationBrandModel> list) {
-                        //lấy tổng số quà đổi còn lại của brand theo customerid
 
-                        localRepository.getListProductChooseGift(customerId).subscribe(new Action1<List<TotalChangeGiftModel>>() {
-                            @Override
-                            public void call(List<TotalChangeGiftModel> totalChangeGiftModels) {
-                                view.showInfoCustomerAndListTotalBrand(customerModel, list, totalChangeGiftModels);
-                            }
-                        });
-                    }
-                });
+                view.showInfoCustomerAndListTotalBrand((CustomerModel) objects.get(0), (List<TotalRotationBrandModel>) objects.get(1), (List<TotalChangeGiftModel>) objects.get(2),(TotalTopupModel) objects.get(3));
 
 
             }
@@ -385,7 +375,7 @@ public class RotationPresenter implements RotationContract.Presenter {
     private List<Integer> integerList = new ArrayList<Integer>();
 
     @Override
-    public void saveGift(int customerId, LinkedHashMap<GiftModel, Integer> listChooseGift, boolean isTopupCard) {
+    public void saveGift(int customerId, LinkedHashMap<GiftModel, Integer> listChooseGift) {
         UserEntity user = UserManager.getInstance().getUser();
         List<CustomerGiftModel> giftModelList = new ArrayList<>();
         if (listChooseGift.size() > 0) {
@@ -399,7 +389,7 @@ public class RotationPresenter implements RotationContract.Presenter {
             @Override
             public void call(List<Integer> list) {
                 // view.showSuccess(CoreApplication.getInstance().getString(R.string.text_save_success));
-                goToMega(customerId, isTopupCard);
+                goToMega(customerId);
 //                if (list.size() > 0) {
 //                    integerList.clear();
 //                    integerList.addAll(list);
@@ -413,27 +403,24 @@ public class RotationPresenter implements RotationContract.Presenter {
     }
 
     @Override
-    public void confirmChangeSet(int customerId, LinkedHashMap<Integer, Boolean> changeBrandSetList, LinkedHashMap<GiftModel, Integer> listGift, boolean isTopupCard) {
+    public void confirmChangeSet(int customerId, LinkedHashMap<Integer, Boolean> changeBrandSetList, LinkedHashMap<GiftModel, Integer> listGift) {
         List<ChooseSetEntitiy> list = ChooseSetManager.getInstance().getListChooseSet();
         if (list != null && list.size() > 0) {
             view.showProgressBar();
             positionBrand = 0;
-            changeBrandGift(customerId, list, changeBrandSetList, listGift, isTopupCard);
+            changeBrandGift(customerId, list, changeBrandSetList, listGift);
         } else {
             if (listGift.size() > 0) {
-                saveGift(customerId, listGift, isTopupCard);
+                saveGift(customerId, listGift);
             } else {
-                goToMega(customerId, isTopupCard);
+                goToMega(customerId);
             }
         }
     }
 
     @Override
-    public void goToMega(int customerId, boolean isTopupCard) {
+    public void goToMega(int customerId) {
 
-        if (isTopupCard) {
-            view.showDialogTopUp();
-        } else
             view.showSuccess(CoreApplication.getInstance().getString(R.string.text_save_success));
 
     }
@@ -454,7 +441,7 @@ public class RotationPresenter implements RotationContract.Presenter {
     }
 
     @Override
-    public void sendTopupCard(String phone, String type) {
+    public void sendTopupCard(int customerId,String phone, String type) {
         if (!NetworkUtils.isConnected(CoreApplication.getInstance())) {
             view.showError(CoreApplication.getInstance().getString(R.string.text_err_connect_internet));
             return;
@@ -466,8 +453,18 @@ public class RotationPresenter implements RotationContract.Presenter {
                 SendTopupCardUsecase.ErrorValue>() {
             @Override
             public void onSuccess(SendTopupCardUsecase.ResponseValue successResponse) {
-                view.hideProgressBar();
-                view.sendTopupSuccessfully();
+                localRepository.saveStatusTopUpcard(customerId,phone).subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        if (integer > 0){
+                            sendTopupCard(customerId,phone,type);
+                        }else {
+                            view.hideProgressBar();
+                            view.sendTopupSuccessfully();
+                        }
+
+                    }
+                });
             }
 
             @Override

@@ -81,10 +81,15 @@ public class CustomerGiftModel extends RealmObject {
 
         }
 
-        CustomerModel customerModel = realm.where(CustomerModel.class).equalTo("Id", customerId).findFirst();
-        customerModel.setFinishedSP(true);
+        TotalTopupModel totalTopupModel = realm.where(TotalTopupModel.class).equalTo("CustomerId",customerId).findFirst();
+        if (totalTopupModel == null){
+
+            CustomerModel customerModel = realm.where(CustomerModel.class).equalTo("Id", customerId).findFirst();
+            customerModel.setFinishedSP(true);
+        }
 
         TotalChangeGiftModel totalChangeGiftModel = realm.where(TotalChangeGiftModel.class).equalTo("CustomerId", customerId).findFirst();
+        if (totalChangeGiftModel != null)
         totalChangeGiftModel.setFinished(true);
 
         RealmResults<BrandModel> brandModelRealmResults = realm.where(BrandModel.class).equalTo("IsDialLucky", true).findAll();

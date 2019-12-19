@@ -13,7 +13,9 @@ import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -65,11 +67,10 @@ public interface GiftApiInterface {
     Call<BaseResponse> updateCurrentGift(@Field("pAppCode") String appCode,
                                          @Field("pData") String data);
 
-    @FormUrlEncoded
-    @POST("https://sp20.imark.com.vn/WS/api/SupConfirmWarehouseRequirementSetWS")
-    Call<BaseResponse> confirmWarehouseRequirementSet(@Field("pAppCode") String appCode,
-                                                      @Field("pWarehouseRequirementID") int id,
-                                                      @Field("pUserID") int userId);
+    @POST("https://apikdt.imark.com.vn/v1/requests/report-out/received")
+    Call<BaseResponse> confirmWarehouseRequirementSet(
+            @Query("token") long token,
+            @Body RequestBody body);
 
 
     @FormUrlEncoded
@@ -84,10 +85,9 @@ public interface GiftApiInterface {
     Call<BaseResponse> addBrandSetUsed(@Field("pAppCode") String appCode,
                                        @Field("pData") String data);
 
-    @FormUrlEncoded
-    @POST("https://sp20.imark.com.vn/WS/api/GetWarehouseRequirementWS")
-    Call<BaseListResponse<ConfirmSetEntity>> getWarehouseRequirement(@Field("pAppCode") String appCode,
-                                                                     @Field("pOutletID") int outletId);
+    @GET("https://apikdt.imark.com.vn/v1/requests/sp/{outletId}")
+    Call<BaseListResponse<ConfirmSetEntity>> getWarehouseRequirement(@Header("Authorization") String tokenBearer,@Path("outletId") int outletId,@Query("token") long token
+                                                                     );
 
     @FormUrlEncoded
     @POST("https://sp20.imark.com.vn/WS/api/AddCustomerTotalDialMega")

@@ -91,7 +91,7 @@ public class SettingPresenter implements SettingContract.Presenter {
     public void changePassword(String passOld, String passNew) {
         view.showProgressBar();
         UserEntity userEntity = UserManager.getInstance().getUser();
-        changePassUsecase.executeIO(new ChangePassUsecase.RequestValue(userEntity.getTeamOutletId(), passOld, passNew),
+        changePassUsecase.executeIO(new ChangePassUsecase.RequestValue(userEntity.getUserId(), passOld, passNew),
                 new BaseUseCase.UseCaseCallback<ChangePassUsecase.ResponseValue, ChangePassUsecase.ErrorValue>() {
                     @Override
                     public void onSuccess(ChangePassUsecase.ResponseValue successResponse) {

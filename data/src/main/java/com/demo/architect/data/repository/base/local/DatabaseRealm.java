@@ -50,6 +50,7 @@ import com.demo.architect.data.model.offline.TimeRotationModel;
 import com.demo.architect.data.model.offline.TotalChangeGiftModel;
 import com.demo.architect.data.model.offline.TotalRotationBrandModel;
 import com.demo.architect.data.model.offline.TotalRotationModel;
+import com.demo.architect.data.model.offline.TotalTopupModel;
 import com.demo.architect.utils.view.ConvertUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -57,10 +58,12 @@ import com.google.gson.GsonBuilder;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.realm.DynamicRealm;
+import io.realm.FieldAttribute;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmMigration;
@@ -86,7 +89,7 @@ public class DatabaseRealm {
                     + "_" + SharedPreferenceHelper.getInstance(context).getUserObject().getProjectId() + ".realm";
             RealmConfiguration realmConfigurationMain = new RealmConfiguration.Builder()
                     .name(nameDatabase)
-                    .schemaVersion(3)
+                    .schemaVersion(6)
                     .migration(new MyMigration())
                     .build();
             Realm.setDefaultConfiguration(realmConfigurationMain);
@@ -613,9 +616,9 @@ public class DatabaseRealm {
         return list;
     }
 
-    public LinkedHashMap<CurrentBrandModel, List<BrandSetDetailModel>> getListBrandSetDetailCurrent(int outletId) {
+    public LinkedHashMap<Object, List<BrandSetDetailModel>> getListBrandSetDetailCurrent(int outletId) {
         Realm realm = getRealmInstance();
-        LinkedHashMap<CurrentBrandModel, List<BrandSetDetailModel>> list = CurrentBrandModel.getListBrandSetDetailCurrent(realm, outletId);
+        LinkedHashMap<Object, List<BrandSetDetailModel>> list = CurrentBrandModel.getListBrandSetDetailCurrent(realm, outletId);
         return list;
     }
 
@@ -1107,9 +1110,9 @@ public class DatabaseRealm {
         });
     }
 
-    public CustomerModel getInfoCustomerById(int customerId) {
+    public List<Object> getInfoCustomerById(int customerId) {
         Realm realm = getRealmInstance();
-        CustomerModel customerModel = CustomerModel.getInfoCustomerById(realm, customerId);
+        List<Object> customerModel = CustomerModel.getInfoCustomerById(realm, customerId);
         return customerModel;
     }
 
@@ -1221,6 +1224,12 @@ public class DatabaseRealm {
         if (rotationBrandModelList.size() > 0) {
             TotalRotationBrandModel.create(realm, rotationBrandModelList, customerId);
         }
+        if (list.size() == 6) {
+            TotalTopupModel totalTopupModel = ((TotalTopupModel) list.get(5));
+            totalTopupModel.setId(TotalTopupModel.id(realm) + 1);
+            totalTopupModel.setCustomerId(customerId);
+            realm.copyToRealm(totalTopupModel);
+        }
         realm.commitTransaction();
         return customerId;
     }
@@ -1248,6 +1257,24 @@ public class DatabaseRealm {
             }
         }
         return objectList;
+    }
+
+    public int saveStatusTopUpcard(final int customerId, final String phone) {
+        int number = 0;
+        Realm realm = getRealmInstance();
+        realm.beginTransaction();
+        TotalTopupModel totalTopupModel = realm.where(TotalTopupModel.class).equalTo("CustomerId", customerId).findFirst();
+        totalTopupModel.setNumberSend(totalTopupModel.getNumberSend() + 1);
+        if (totalTopupModel.getNumberSend() == totalTopupModel.getNumberTotal()) {
+            CustomerModel customerModel = realm.where(CustomerModel.class).equalTo("Id", customerId).findFirst();
+            totalTopupModel.setFinished(true);
+            totalTopupModel.setPhone(phone);
+            customerModel.setFinishedSP(true);
+        }
+
+        number = totalTopupModel.getNumberTotal() - totalTopupModel.getNumberSend();
+        realm.commitTransaction();
+        return number;
     }
 
     public class MyMigration implements RealmMigration {
@@ -1282,7 +1309,27 @@ public class DatabaseRealm {
                 oldVersion++;
             }
 
+            if (oldVersion == 3) {
+                schema.get("BrandModel").addField("IsTopupCard", boolean.class);
+                schema.create("TotalTopupModel").addField("Id", int.class, FieldAttribute.PRIMARY_KEY)
+                        .addField("CustomerId", int.class)
+                        .addField("Phone", String.class)
+                        .addField("BrandId", int.class)
+                        .addField("NumberTotal", int.class)
+                        .addField("DateCreate", Date.class)
+                        .addField("Finished", boolean.class);
+                schema.get("CustomerModel").addField("FinishTopup", boolean.class);
+                oldVersion++;
+            }
+            if (oldVersion == 4) {
+                schema.get("BrandModel").addField("IsRequest", boolean.class);
+                oldVersion++;
+            }
 
+            if (oldVersion == 5) {
+                schema.get("TotalTopupModel").addField("NumberSend", int.class);
+                oldVersion++;
+            }
         }
 
         @Override

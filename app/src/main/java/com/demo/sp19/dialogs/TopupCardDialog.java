@@ -10,17 +10,25 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.demo.architect.data.model.offline.TotalTopupModel;
+import com.demo.architect.utils.view.ConvertUtils;
 import com.demo.sp19.R;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class TopupCardDialog extends DialogFragment {
     private OnConfirmListener confirmListener;
 
     private String phone;
 
+    Realm realm = Realm.getDefaultInstance();
     public void setPhone(String phone) {
         this.phone = phone;
     }
@@ -56,16 +64,30 @@ public class TopupCardDialog extends DialogFragment {
                 dialog.dismiss();
             }
         });
-
+        Date DateCreate = ConvertUtils.ConvertStringToShortDate(ConvertUtils.getDateTimeCurrentShort());
         dialog.findViewById(R.id.tv_submit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(etPhone.getText().toString())) {
                     return;
                 }
+
+                RealmResults<TotalTopupModel> realmResults = realm.where(TotalTopupModel.class).equalTo("Phone",etPhone.getText().toString())
+                        .greaterThanOrEqualTo("DateCreate",DateCreate).findAll();
+                if (realmResults.size() >= 2){
+                    Toast.makeText(getActivity(), "Số điện thoại đã được nạp tiền 2 lần", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if (confirmListener!= null){
                     confirmListener.onConfirm(etPhone.getText().toString(),spType.getSelectedItemPosition() == 0? "prepaid" : "postpaid");
                 }
+            }
+        });
+        dialog.findViewById(R.id.rootView).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
             }
         });
         return dialog;

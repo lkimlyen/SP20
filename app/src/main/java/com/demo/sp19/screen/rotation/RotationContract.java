@@ -12,6 +12,7 @@ import com.demo.architect.data.model.offline.GiftModel;
 import com.demo.architect.data.model.offline.ProductGiftModel;
 import com.demo.architect.data.model.offline.TotalChangeGiftModel;
 import com.demo.architect.data.model.offline.TotalRotationBrandModel;
+import com.demo.architect.data.model.offline.TotalTopupModel;
 import com.demo.sp19.app.base.BasePresenter;
 import com.demo.sp19.app.base.BaseView;
 
@@ -39,7 +40,7 @@ public interface RotationContract {
 
         void goToRotationMega(String string, int customerId);
 
-        void showInfoCustomerAndListTotalBrand(CustomerModel customerModel, List<TotalRotationBrandModel> list, List<TotalChangeGiftModel> totalChangeGiftModels);
+        void showInfoCustomerAndListTotalBrand(CustomerModel customerModel, List<TotalRotationBrandModel> list, List<TotalChangeGiftModel> totalChangeGiftModels, TotalTopupModel totalTopupModel);
 
         void showDialogTopUp();
 
@@ -63,17 +64,17 @@ public interface RotationContract {
         void updateNumberTurnAndSaveGift(int customerId, int id, int giftId, int number, List<CurrentGift> currentGiftList, CurrentBrandModel currentBrandModel, boolean finish);
 
         //lưu thông tin quà đã nhận được của khách hàng
-        void saveGift(int customerId, LinkedHashMap<GiftModel, Integer> listChooseGift, boolean isTopupCard);
+        void saveGift(int customerId, LinkedHashMap<GiftModel, Integer> listChooseGift);
 
-        void confirmChangeSet(int customerId, LinkedHashMap<Integer, Boolean> changeBrandSetList, LinkedHashMap<GiftModel, Integer> listGift, boolean isTopupCard);
+        void confirmChangeSet(int customerId, LinkedHashMap<Integer, Boolean> changeBrandSetList, LinkedHashMap<GiftModel, Integer> listGift);
 
         //check điều kiện chuyển đến vòng quay mega
-        void goToMega(int customerId, boolean isTopupCard);
+        void goToMega(int customerId);
 
         //lấy ds quà đã đổi của customer
         List<CustomerGiftModel> getGiftByCustomer(int customerId);
 
-        void sendTopupCard(String phone, String type);
+        void sendTopupCard(int customerId,String phone, String type);
 
 
     }

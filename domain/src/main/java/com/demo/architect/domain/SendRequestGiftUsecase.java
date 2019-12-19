@@ -7,6 +7,7 @@ import com.demo.architect.data.model.ConfirmSetEntity;
 import com.demo.architect.data.repository.base.gift.remote.GiftRepository;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.observers.DisposableObserver;
@@ -22,9 +23,8 @@ public class SendRequestGiftUsecase extends BaseUseCase<BaseResponse<ConfirmSetE
 
     @Override
     protected Observable<BaseResponse<ConfirmSetEntity>> buildUseCaseObservable() {
-       int spId = ((RequestValue)requestValues).spId;
-        LinkedHashMap<Integer, Integer> brandSetId = ((RequestValue)requestValues).bransetId;
-        return remoteRepository.sendRequestGift(spId, brandSetId);
+        Map<String, Object> brandSetId = ((RequestValue)requestValues).bransetId;
+        return remoteRepository.sendRequestGift( brandSetId);
     }
 
 
@@ -61,12 +61,11 @@ public class SendRequestGiftUsecase extends BaseUseCase<BaseResponse<ConfirmSetE
     }
 
     public static final class RequestValue implements RequestValues {
-      private final int spId;
-      private final LinkedHashMap<Integer, Integer> bransetId;
+
+      private final Map<String, Object> bransetId;
 
 
-        public RequestValue(int spId, LinkedHashMap<Integer, Integer> bransetId) {
-            this.spId = spId;
+        public RequestValue(Map<String, Object> bransetId) {
             this.bransetId = bransetId;
         }
     }

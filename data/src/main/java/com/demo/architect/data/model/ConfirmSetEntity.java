@@ -6,24 +6,35 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class ConfirmSetEntity {
-    @SerializedName("WarehouseRequirementSetID")
+    @SerializedName("ID")
     @Expose
-    private int id;
+    private int ID;
 
-    @SerializedName("RequirementCode")
+    @SerializedName("SPID")
     @Expose
-    private String code;
+    private int SPID;
 
 
-    @SerializedName("RequirementDateTime")
+    @SerializedName("SPName")
     @Expose
-    private String requirementDateTime;
+    private String SPName;
 
+    @SerializedName("WarehouseID")
+    @Expose
+    private int WarehouseID;
     @SerializedName("Status")
     @Expose
-    private int status;
+    private int Status;
 
-    @SerializedName("ListDetail")
+    @SerializedName("CreatedAt")
+    @Expose
+    private long CreatedAt;
+
+
+    @SerializedName("Gifts")
+    @Expose
+    private List<GiftEntity> Gifts;
+    @SerializedName("BrandSets")
     @Expose
     private List<DetailSet> detailSetList;
 
@@ -45,20 +56,32 @@ public class ConfirmSetEntity {
         }
     }
 
-    public int getId() {
-        return id;
+    public int getID() {
+        return ID;
     }
 
-    public String getCode() {
-        return code;
+    public int getSPID() {
+        return SPID;
     }
 
-    public String getRequirementDateTime() {
-        return requirementDateTime;
+    public String getSPName() {
+        return SPName;
+    }
+
+    public int getWarehouseID() {
+        return WarehouseID;
     }
 
     public int getStatus() {
-        return status;
+        return Status;
+    }
+
+    public long getCreatedAt() {
+        return CreatedAt;
+    }
+
+    public List<GiftEntity> getGifts() {
+        return Gifts;
     }
 
     public List<DetailSet> getDetailSetList() {

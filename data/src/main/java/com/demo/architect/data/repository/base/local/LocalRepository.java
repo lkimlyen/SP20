@@ -151,7 +151,7 @@ public interface LocalRepository {
 
     Observable<LinkedHashMap<BrandModel, List<ProductGiftModel>>> getListGiftByProduct(List<Integer> idProductList);
 
-    Observable<LinkedHashMap<CurrentBrandModel, List<BrandSetDetailModel>>> getListBrandSetDetailCurrent(int outletId);
+    Observable<LinkedHashMap<Object, List<BrandSetDetailModel>>> getListBrandSetDetailCurrent(int outletId);
 
     Observable<LinkedHashMap<CustomerModel, List<CustomerGiftModel>>> checkOrderCode(String customerCode);
 
@@ -264,7 +264,7 @@ public interface LocalRepository {
 
     Observable<String> saveTotalRotaionWithBrand(List<TotalRotationBrandModel> rotationBrandModelList);
 
-    Observable<CustomerModel> getInfoCustomerById(int customerId);
+    Observable< List<Object>> getInfoCustomerById(int customerId);
 
     Observable<List<TotalRotationBrandModel>> getListTotalRotationBrand(int customerId);
 
@@ -288,4 +288,6 @@ public interface LocalRepository {
     Observable<Integer> saveInfoChangeGift(List<Object> list);
 
     Observable<List<Integer>> getInfoSendRequest();
+
+    Observable<Integer> saveStatusTopUpcard(int customerId,String phone);
 }
