@@ -207,6 +207,8 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
         customerId = -1;
         isClickDialog = true;
         brandRotationList.clear();
+        brandCodeList.clear();
+        topupChangeList.clear();
         mCurrentPhotoPath = null;
         ivCustomerPhone.setVisibility(View.GONE);
         ivCustomerCode.setVisibility(View.GONE);
