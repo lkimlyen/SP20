@@ -68,7 +68,7 @@ public class CustomerModel extends RealmObject implements Serializable {
 
     private boolean Finished;
     private boolean FinishedSP;
-
+    private boolean FinishTopup;
     private Date DateCreate;
     @SerializedName("pDeviceDateTime")
     @Expose
@@ -417,7 +417,7 @@ public class CustomerModel extends RealmObject implements Serializable {
                             brandModelIntegerLinkedHashMap.put(brandModel, countGift);
                         }
 
-                        if (brandModel.isTopupCard()){
+                        if (brandModel.isTopupCard()) {
                             break;
                         }
 
@@ -613,7 +613,7 @@ public class CustomerModel extends RealmObject implements Serializable {
                 .equalTo("CustomerId", customerId).equalTo("Finished", false).findAll();
         RealmResults<TotalChangeGiftModel> results = realm.where(TotalChangeGiftModel.class)
                 .equalTo("CustomerId", customerId).findAll();
-        TotalTopupModel totalTopupModel = realm.where(TotalTopupModel.class).equalTo("CustomerId",customerId).equalTo("Finished",false).findFirst();
+        TotalTopupModel totalTopupModel = realm.where(TotalTopupModel.class).equalTo("CustomerId", customerId).equalTo("Finished", false).findFirst();
         list.add(realm.copyFromRealm(customerModel));
         list.add(realm.copyFromRealm(totalRotationBrandModels));
         list.add(realm.copyFromRealm(results));

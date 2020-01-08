@@ -89,7 +89,7 @@ public class DatabaseRealm {
                     + "_" + SharedPreferenceHelper.getInstance(context).getUserObject().getProjectId() + ".realm";
             RealmConfiguration realmConfigurationMain = new RealmConfiguration.Builder()
                     .name(nameDatabase)
-                    .schemaVersion(6)
+                    .schemaVersion(7)
                     .migration(new MyMigration())
                     .build();
             Realm.setDefaultConfiguration(realmConfigurationMain);
@@ -619,7 +619,7 @@ public class DatabaseRealm {
     public LinkedHashMap<Object, List<BrandSetDetailModel>> getListBrandSetDetailCurrent(int outletId) {
         Realm realm = getRealmInstance();
         int outletType = SharedPreferenceHelper.getInstance(context).getUserObject().getOutlet().getOutletType();
-        LinkedHashMap<Object, List<BrandSetDetailModel>> list = CurrentBrandModel.getListBrandSetDetailCurrent(realm, outletId,outletType);
+        LinkedHashMap<Object, List<BrandSetDetailModel>> list = CurrentBrandModel.getListBrandSetDetailCurrent(realm, outletId, outletType);
         return list;
     }
 
@@ -1331,7 +1331,10 @@ public class DatabaseRealm {
                 schema.get("TotalTopupModel").addField("NumberSend", int.class);
                 oldVersion++;
             }
-
+            if (oldVersion == 6) {
+                schema.get("CustomerModel").hasField("FinishTopup");
+                oldVersion++;
+            }
         }
 
         @Override
