@@ -618,7 +618,8 @@ public class DatabaseRealm {
 
     public LinkedHashMap<Object, List<BrandSetDetailModel>> getListBrandSetDetailCurrent(int outletId) {
         Realm realm = getRealmInstance();
-        LinkedHashMap<Object, List<BrandSetDetailModel>> list = CurrentBrandModel.getListBrandSetDetailCurrent(realm, outletId);
+        int outletType = SharedPreferenceHelper.getInstance(context).getUserObject().getOutlet().getOutletType();
+        LinkedHashMap<Object, List<BrandSetDetailModel>> list = CurrentBrandModel.getListBrandSetDetailCurrent(realm, outletId,outletType);
         return list;
     }
 
@@ -1330,6 +1331,7 @@ public class DatabaseRealm {
                 schema.get("TotalTopupModel").addField("NumberSend", int.class);
                 oldVersion++;
             }
+
         }
 
         @Override

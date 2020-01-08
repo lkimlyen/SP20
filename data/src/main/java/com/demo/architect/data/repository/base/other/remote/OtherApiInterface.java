@@ -81,5 +81,6 @@ public interface OtherApiInterface {
                                   @Field("outletId") int outletId,
                           @Field("userId") int userId,
                           @Field("userType") String userType,
-                          @Field("secretKey") String secretKey);
+                          @Field("secretKey") String secretKey,
+                                     @Field("phoneChangeGift") String phoneChangeGift);
 }

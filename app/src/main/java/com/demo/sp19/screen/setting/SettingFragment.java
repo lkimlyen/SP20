@@ -2,6 +2,7 @@ package com.demo.sp19.screen.setting;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -30,6 +31,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -37,6 +43,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 
 import java.io.File;
 import java.util.Calendar;
@@ -45,7 +52,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by MSI on 26/11/2017.
@@ -57,6 +65,8 @@ public class SettingFragment extends BaseFragment implements SettingContract.Vie
     private DatabaseReference mDatabase;
     private StorageReference storageRef;
     private FirebaseAuth auth;
+
+    private final int REQUEST_CODE_UPDATE_APP = 9876;
     @BindView(R.id.ll_content)
     LinearLayout llContent;
 
@@ -84,9 +94,18 @@ public class SettingFragment extends BaseFragment implements SettingContract.Vie
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 333) {
-            if (resultCode == Activity.RESULT_OK) {
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 333) {
+
                 UserManager.getInstance().setUser(null);
+
+            }
+
+
+        } else {
+            if (requestCode == REQUEST_CODE_UPDATE_APP) {
+                showError(getString(R.string.text_update_app_fail));
             }
         }
     }
@@ -178,46 +197,44 @@ public class SettingFragment extends BaseFragment implements SettingContract.Vie
                         if (!task.isSuccessful()) {
                             // there was an error
                             Log.d(TAG, "Login fail");
-
+                            showError(getString(R.string.text_backup_fail));
+                            hideProgressBar();
                         } else {
                             storageRef = storage.getReference();
+                            UploadTask uploadTask;
+                            Uri file = Uri.fromFile(new File(path));
+                                Calendar instance = Calendar.getInstance();
+                                int month = instance.get(Calendar.MONTH) + 1;
+                                StorageReference riversRef = storageRef.child(user.getOutlet().getOutletName() + "/" + instance.get(Calendar.YEAR) + "/" + month + "/" + instance.get(Calendar.DATE) + "/" + ConvertUtils.getCodeGenerationByTime() + file.getLastPathSegment());
+                                uploadTask = riversRef.putFile(file);
+                                uploadTask.addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        // Handle unsuccessful uploads
+                                        if (isAdded()) {
+                                            showError(getString(R.string.text_backup_fail));
+                                            Log.d(TAG, exception.getMessage());
+                                            hideProgressBar();
+                                        }
+
+                                    }
+                                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                                        if (isAdded()) {
+                                            showSuccess(getString(R.string.text_backup_success));
+                                            hideProgressBar();
+                                        }
+
+                                    }
+                                });
+
                             Log.d(TAG, "Success");
                         }
                     }
                 });
-        UploadTask uploadTask;
-        Uri file = Uri.fromFile(new File(path));
-        if (storageRef != null) {
-            Calendar instance = Calendar.getInstance();
-            int month = instance.get(Calendar.MONTH) + 1;
-            StorageReference riversRef = storageRef.child(user.getOutlet().getOutletName() + "/" + instance.get(Calendar.YEAR) + "/" + month + "/" + instance.get(Calendar.DATE) + "/" + ConvertUtils.getCodeGenerationByTime() + file.getLastPathSegment());
-            uploadTask = riversRef.putFile(file);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                    if (isAdded()) {
-                        showError(getString(R.string.text_backup_fail));
-                        Log.d(TAG, exception.getMessage());
-                        hideProgressBar();
-                    }
 
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                    if (isAdded()) {
-                        showSuccess(getString(R.string.text_backup_success));
-                        hideProgressBar();
-                    }
-
-                }
-            });
-        } else {
-            showError(getString(R.string.text_backup_fail));
-            hideProgressBar();
-        }
 
     }
 
@@ -257,13 +274,12 @@ public class SettingFragment extends BaseFragment implements SettingContract.Vie
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         mDatabase = database.getReference();
-        String date = ConvertUtils.getDateTimeCurrentShort().replace("/","_");
-        String name =  user.getName().replace(".","");
+        String date = ConvertUtils.getDateTimeCurrentShort().replace("/", "_");
+        String name = user.getName().replace(".", "");
         mDatabase.child("reset_data").child(date).child(user.getTeamOutletId() + "_" + name).setValue(version).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                // Write was successful!
-                // ...
+
 
                 hideProgressBar();
                 Intent returnIntent = new Intent();
@@ -346,7 +362,7 @@ public class SettingFragment extends BaseFragment implements SettingContract.Vie
                     @Override
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
                         sweetAlertDialog.dismiss();
-                        mPresenter.updateApp();
+                      checkUpdateGooglePlay();
                     }
                 }).setCancelText(getString(R.string.text_no))
                 .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
@@ -355,6 +371,36 @@ public class SettingFragment extends BaseFragment implements SettingContract.Vie
                         sweetAlertDialog.dismiss();
                     }
                 }).show();
+    }
+
+    private void checkUpdateGooglePlay() {
+        // Creates instance of the manager.
+        AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(getContext());
+
+// Returns an intent object that you use to check for an update.
+        com.google.android.play.core.tasks.Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+
+// Checks that the platform will allow the specified type of update.
+        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    // For a flexible update, use AppUpdateType.FLEXIBLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                // Request the update.
+                try {
+                    appUpdateManager.startUpdateFlowForResult(
+                            // Pass the intent that is returned by 'getAppUpdateInfo()'.
+                            appUpdateInfo,
+                            // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
+                            AppUpdateType.IMMEDIATE,
+                            // The current activity making the update request.
+                            getActivity(),
+                            // Include a request code to later monitor this update request.
+                            REQUEST_CODE_UPDATE_APP);
+                } catch (IntentSender.SendIntentException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @OnClick(R.id.ll_reset_data)
@@ -394,4 +440,5 @@ public class SettingFragment extends BaseFragment implements SettingContract.Vie
             tvState.setTextColor(getResources().getColor(R.color.white));
         }
     }
+
 }

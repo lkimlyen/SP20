@@ -10,9 +10,7 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.demo.architect.data.model.offline.TotalTopupModel;
 import com.demo.architect.utils.view.ConvertUtils;
 import com.demo.sp19.R;
 
@@ -21,7 +19,6 @@ import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
 
 public class TopupCardDialog extends DialogFragment {
     private OnConfirmListener confirmListener;
@@ -69,13 +66,6 @@ public class TopupCardDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(etPhone.getText().toString())) {
-                    return;
-                }
-
-                RealmResults<TotalTopupModel> realmResults = realm.where(TotalTopupModel.class).equalTo("Phone",etPhone.getText().toString())
-                        .greaterThanOrEqualTo("DateCreate",DateCreate).findAll();
-                if (realmResults.size() >= 2){
-                    Toast.makeText(getActivity(), "Số điện thoại đã được nạp tiền 2 lần", Toast.LENGTH_SHORT).show();
                     return;
                 }
 

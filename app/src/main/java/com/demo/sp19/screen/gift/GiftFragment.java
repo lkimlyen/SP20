@@ -610,8 +610,13 @@ public class GiftFragment extends BaseFragment implements GiftContract.View {
         etNumber.setText("");
         etNumber.setTag(productModel);
         listEdittext.add(etNumber);
-        etNumber.setHint(String.format(getString(R.string.text_number_product), productModel.getProductName()));
+        if (productModel.getProductName().contains("StrongBow")){
+
+            etNumber.setHint(String.format(getString(R.string.text_number_product_strongbow), productModel.getProductName()));
+            tvTitle.setText(String.format(getString(R.string.text_number_product_short_strongbow), productModel.getProductName()));
+        }else {
         tvTitle.setText(String.format(getString(R.string.text_number_product_short), productModel.getProductName()));
+            etNumber.setHint(String.format(getString(R.string.text_number_product), productModel.getProductName()));}
         etNumber.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

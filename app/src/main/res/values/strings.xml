@@ -40,8 +40,10 @@
     <string name="text_product_in_posm">Chỉ đếm số lượng trong line, ụ kệ trưng bày bia</string>
     <string name="text_choose_type_attendance">Bạn chưa chọn loại chấm công</string>
     <string name="text_number">Số lượng</string>
-    <string name="text_number_product" formatted="true">Số lượng %s</string>
-    <string name="text_number_product_short" formatted="true">SL %s:</string>
+    <string name="text_number_product" formatted="true">Số lượng thùng %s</string>
+    <string name="text_number_product_short" formatted="true">SL thùng %s:</string>
+    <string name="text_number_product_strongbow" formatted="true">Số lượng %s</string>
+    <string name="text_number_product_short_strongbow" formatted="true">SL %s:</string>
     <string name="text_number_input_null">Bạn chưa nhập số lượng!</string>
     <string name="text_number_input_greater_than_zero">Số lượng nhập vào phải lớn hơn không</string>
     <string name="text_save_success">Lưu thành công</string>

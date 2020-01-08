@@ -74,7 +74,7 @@ public interface RotationContract {
         //lấy ds quà đã đổi của customer
         List<CustomerGiftModel> getGiftByCustomer(int customerId);
 
-        void sendTopupCard(int customerId,String phone, String type);
+        void sendTopupCard(int customerId,String phone, String type, String phoneChangeGift);
 
 
     }

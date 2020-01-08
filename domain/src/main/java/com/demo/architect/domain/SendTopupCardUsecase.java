@@ -23,7 +23,10 @@ public class SendTopupCardUsecase extends BaseUseCase<BaseResponse>  {
         String phoneType = ((RequestValue)requestValues).phoneType;
         int outletId = ((RequestValue)requestValues).outletId;
         int userId = ((RequestValue)requestValues).userId;
-        return remoteRepository.sendTopupCard(phone,phoneType,outletId,userId, "sp","ciub6yO3YDiEsP5FkTki4R1unEeesjNcOyKWm-QLsSvzd1z0A1MeRET_n4a6_ZeNF5b_UduMleNz7Yfr76R_6K2YRH94UDNxXA2GjYG8njVEduXjdnV5TUtEZaaUcO");
+        String phoneChangeGift = ((RequestValue)requestValues).phoneChangeGift;
+        return remoteRepository.sendTopupCard(phone,phoneType,outletId,userId, "sp"
+                ,"ciub6yO3YDiEsP5FkTki4R1unEeesjNcOyKWm-QLsSvzd1z0A1MeRET_n4a6_ZeNF5b_UduMleNz7Yfr76R_6K2YRH94UDNxXA2GjYG8njVEduXjdnV5TUtEZaaUcO",
+                phoneChangeGift);
     }
 
 
@@ -62,12 +65,14 @@ public class SendTopupCardUsecase extends BaseUseCase<BaseResponse>  {
         private final String phoneType;
         private final int outletId;
         private final int userId;
+        private final String phoneChangeGift;
 
-        public RequestValue(String phone, String phoneType, int outletId, int userId) {
+        public RequestValue(String phone, String phoneType, int outletId, int userId, String phoneChangeGift) {
             this.phone = phone;
             this.phoneType = phoneType;
             this.outletId = outletId;
             this.userId = userId;
+            this.phoneChangeGift = phoneChangeGift;
         }
     }
 

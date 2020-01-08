@@ -441,7 +441,7 @@ public class RotationPresenter implements RotationContract.Presenter {
     }
 
     @Override
-    public void sendTopupCard(int customerId,String phone, String type) {
+    public void sendTopupCard(int customerId,String phone, String type, String phoneChangeGift) {
         if (!NetworkUtils.isConnected(CoreApplication.getInstance())) {
             view.showError(CoreApplication.getInstance().getString(R.string.text_err_connect_internet));
             return;
@@ -449,7 +449,7 @@ public class RotationPresenter implements RotationContract.Presenter {
         view.showProgressBar();
         sendTopupCardUsecase.executeIO(new SendTopupCardUsecase.RequestValue(phone, type,
                 UserManager.getInstance().getUser().getOutlet().getOutletId(),
-                UserManager.getInstance().getUser().getUserId()), new BaseUseCase.UseCaseCallback<SendTopupCardUsecase.ResponseValue,
+                UserManager.getInstance().getUser().getUserId(), phoneChangeGift), new BaseUseCase.UseCaseCallback<SendTopupCardUsecase.ResponseValue,
                 SendTopupCardUsecase.ErrorValue>() {
             @Override
             public void onSuccess(SendTopupCardUsecase.ResponseValue successResponse) {
@@ -457,7 +457,7 @@ public class RotationPresenter implements RotationContract.Presenter {
                     @Override
                     public void call(Integer integer) {
                         if (integer > 0){
-                            sendTopupCard(customerId,phone,type);
+                            sendTopupCard(customerId,phone,type, phoneChangeGift);
                         }else {
                             view.hideProgressBar();
                             view.sendTopupSuccessfully();

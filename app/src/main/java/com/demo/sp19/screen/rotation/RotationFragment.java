@@ -24,6 +24,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.demo.architect.data.model.offline.BackgroundDialModel;
 import com.demo.architect.data.model.offline.BrandModel;
 import com.demo.architect.data.model.offline.BrandSetDetailModel;
@@ -162,7 +164,13 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_rotation, container, false);
         ButterKnife.bind(this, view);
-        customerId = getActivity().getIntent().getIntExtra(Constants.CUSTOMER_ID, 0);
+        if (savedInstanceState != null){
+
+            customerId = savedInstanceState.getInt(Constants.CUSTOMER_ID);
+        }else {
+
+            customerId = getActivity().getIntent().getIntExtra(Constants.CUSTOMER_ID, 0);
+        }
         initView();
         dialog = new TopupCardDialog();
         return view;
@@ -469,7 +477,7 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
         dialog.setConfirmListener(new TopupCardDialog.OnConfirmListener() {
             @Override
             public void onConfirm(String phone, String type) {
-                mPresenter.sendTopupCard(customerId, phone, type);
+                mPresenter.sendTopupCard(customerId, phone, type, tvCustomerPhone.getText().toString());
             }
         });
     }
@@ -634,4 +642,9 @@ public class RotationFragment extends BaseFragment implements RotationContract.V
         }
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(Constants.CUSTOMER_ID,customerId);
+    }
 }
