@@ -1,6 +1,7 @@
 package com.demo.architect.data.repository.base.local;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.demo.architect.data.helper.Constants;
 import com.demo.architect.data.helper.RealmHelper;
@@ -89,7 +90,7 @@ public class DatabaseRealm {
                     + "_" + SharedPreferenceHelper.getInstance(context).getUserObject().getProjectId() + ".realm";
             RealmConfiguration realmConfigurationMain = new RealmConfiguration.Builder()
                     .name(nameDatabase)
-                    .schemaVersion(7)
+                    .schemaVersion(8)
                     .migration(new MyMigration())
                     .build();
             Realm.setDefaultConfiguration(realmConfigurationMain);
@@ -1333,6 +1334,15 @@ public class DatabaseRealm {
             }
             if (oldVersion == 6) {
                 schema.get("CustomerModel").hasField("FinishTopup");
+                oldVersion++;
+            }
+
+            if (oldVersion == 7) {
+               boolean  FinishTopup = schema.get("CustomerModel").hasField("FinishTopup");
+               if (FinishTopup){
+                   schema.get("CustomerModel").removeField("FinishTopup");
+                   Log.d("yenyn", "co field duoc add");
+               }
                 oldVersion++;
             }
         }

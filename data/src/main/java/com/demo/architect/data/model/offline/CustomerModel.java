@@ -68,7 +68,6 @@ public class CustomerModel extends RealmObject implements Serializable {
 
     private boolean Finished;
     private boolean FinishedSP;
-    private boolean FinishTopup;
     private Date DateCreate;
     @SerializedName("pDeviceDateTime")
     @Expose
